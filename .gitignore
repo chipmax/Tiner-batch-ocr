@@ -1,0 +1,34 @@
+## Build outputs
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Publish / portable
+*-portable/
+*-test/
+settings.txt
+*-debug.txt
+batch-log*.txt
+batch-state.json
+batch-report.html
+
+## Python / venvs (engines live outside the repo)
+__pycache__/
+*.pyc
+paddle-env/
+mineru4x-venv/
+*-path.txt
+
+## Models & data (large, machine-specific)
+models/
+downloads/
+mineru25-out/
+*.pdf
+*.md.checkpoint
+
+## OS / editor
+Thumbs.db
+Desktop.ini
+.DS_Store

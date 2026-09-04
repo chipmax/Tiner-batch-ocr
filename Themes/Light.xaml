@@ -1,0 +1,22 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Light theme (giu mau goc cua tool) -->
+    <SolidColorBrush x:Key="Theme.AppBg" Color="#F3F4F6"/>
+    <SolidColorBrush x:Key="Theme.CardBg" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Theme.Fg" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="Theme.FgDim" Color="#605E5C"/>
+    <SolidColorBrush x:Key="Theme.Border" Color="#C8C6C4"/>
+    <SolidColorBrush x:Key="Theme.BtnBg" Color="#EDEBE9"/>
+    <SolidColorBrush x:Key="Theme.Accent" Color="#3B82F6"/>
+    <SolidColorBrush x:Key="Theme.SelBg" Color="#CCE8FF"/>
+    <SolidColorBrush x:Key="Theme.HoverBg" Color="#F5F5F5"/>
+    <SolidColorBrush x:Key="Theme.TrackBg" Color="#EDEBE9"/>
+    <SolidColorBrush x:Key="Theme.PillReadyBg" Color="#E5E5E5"/>
+    <SolidColorBrush x:Key="Theme.PillReadyFg" Color="#605E5C"/>
+    <SolidColorBrush x:Key="Theme.PillRunBg" Color="#DFF6DD"/>
+    <SolidColorBrush x:Key="Theme.PillRunFg" Color="#107C10"/>
+    <SolidColorBrush x:Key="Theme.PillStopBg" Color="#FDE7E9"/>
+    <SolidColorBrush x:Key="Theme.PillStopFg" Color="#D13438"/>
+    <SolidColorBrush x:Key="Theme.PillDoneBg" Color="#DFF6DD"/>
+    <SolidColorBrush x:Key="Theme.PillDoneFg" Color="#107C10"/>
+</ResourceDictionary>

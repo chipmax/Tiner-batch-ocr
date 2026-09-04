@@ -1,0 +1,517 @@
+<Window x:Class="MinerU25Tool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource S_AppTitle}"
+        Width="1020" Height="800"
+        MinWidth="920" MinHeight="700"
+        WindowStartupLocation="CenterScreen"
+        Icon="icon.ico"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="CanResize"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        FontFamily="Segoe UI" FontSize="13">
+  <WindowChrome.WindowChrome>
+    <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0"/>
+  </WindowChrome.WindowChrome>
+
+  <Window.Resources>
+
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,0">
+      <GradientStop Color="#3B82F6" Offset="0"/>
+      <GradientStop Color="#22D3EE" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- Controls dung style mac dinh cua WPF-UI (tu theo theme sang/toi,
+         khong custom template de tranh loi click/chu/nen) -->
+    <!-- ProgressBar bo goc + gradient -->
+    <Style TargetType="ProgressBar">
+      <Setter Property="Height" Value="20"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ProgressBar">
+            <Grid>
+              <Border Background="{DynamicResource Theme.TrackBg}" CornerRadius="6" BorderThickness="0"/>
+              <Track x:Name="PART_Track">
+                <Track.DecreaseRepeatButton>
+                  <RepeatButton Command="{x:Static Slider.DecreaseLarge}" IsEnabled="False" Focusable="False">
+                    <RepeatButton.Template>
+                      <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6"/>
+                      </ControlTemplate>
+                    </RepeatButton.Template>
+                    <RepeatButton.Background>
+                      <DynamicResource ResourceKey="AccentGradient"/>
+                    </RepeatButton.Background>
+                  </RepeatButton>
+                </Track.DecreaseRepeatButton>
+                <Track.IncreaseRepeatButton>
+                  <RepeatButton Command="{x:Static Slider.IncreaseLarge}" IsEnabled="False" Focusable="False">
+                    <RepeatButton.Template>
+                      <ControlTemplate TargetType="RepeatButton">
+                        <Border Background="Transparent"/>
+                      </ControlTemplate>
+                    </RepeatButton.Template>
+                  </RepeatButton>
+                </Track.IncreaseRepeatButton>
+              </Track>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+  </Window.Resources>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Height="36" Background="{DynamicResource Theme.CardBg}" CornerRadius="10,10,0,0"
+            MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Image Source="icon.ico" Width="18" Height="18" Margin="12,0,0,0" VerticalAlignment="Center"/>
+        <TextBlock Grid.Column="1" Text="{DynamicResource S_AppTitle}" Foreground="{DynamicResource Theme.Fg}"
+                   VerticalAlignment="Center" Margin="8,0,0,0"/>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Stretch">
+          <Button x:Name="minBtn" Content="─" Width="46" Background="Transparent" Foreground="{DynamicResource Theme.Fg}"
+                  BorderThickness="0" Click="MinBtn_Click"/>
+          <Button x:Name="maxBtn" Content="▢" Width="46" Background="Transparent" Foreground="{DynamicResource Theme.Fg}"
+                  BorderThickness="0" Click="MaxBtn_Click"/>
+          <Button x:Name="closeBtn" Content="✕" Width="46" Background="Transparent" Foreground="{DynamicResource Theme.Fg}"
+                  BorderThickness="0" Click="CloseBtn_Click"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" Margin="14,0,14,14" Background="{DynamicResource Theme.AppBg}" x:Name="contentGrid">
+
+      <ScrollViewer x:Name="contentScroll" VerticalScrollBarVisibility="Auto">
+      <StackPanel>
+
+    <!-- Header -->
+    <Grid Margin="0,0,0,12">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <StackPanel VerticalAlignment="Center">
+        <TextBlock Text="{DynamicResource S_HdrTitle}" FontWeight="Bold" Foreground="{DynamicResource Theme.Fg}"/>
+        <TextBlock Text="{DynamicResource S_HdrSub}" Foreground="{DynamicResource Theme.FgDim}" Margin="0,2,0,0"/>
+      </StackPanel>
+      <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
+        <Border x:Name="pillBorder" CornerRadius="12" Padding="12,5"
+                Background="{DynamicResource Theme.BtnBg}" HorizontalAlignment="Right">
+          <TextBlock x:Name="pillText" Text="{DynamicResource S_PillReady}" Foreground="{DynamicResource Theme.FgDim}" FontWeight="Bold"/>
+        </Border>
+        <TextBlock x:Name="engineBadge" Text="hybrid-engine" Foreground="{DynamicResource Theme.FgDim}"
+                   HorizontalAlignment="Right" Margin="0,4,0,0"
+                   ToolTip="{DynamicResource S_EngineBadgeTip}"/>
+      </StackPanel>
+    </Grid>
+
+    <!-- Cac tab chuc nang -->
+    <TabControl x:Name="mainTabs" Margin="0,0,0,0" TabStripPlacement="Top">
+    <!-- Card Cau hinh -->
+    <TabItem Header="{DynamicResource S_NavConfig}">
+    <Border x:Name="cardConfig" Background="{DynamicResource Theme.CardBg}" BorderBrush="{DynamicResource Theme.Border}" BorderThickness="1"
+            CornerRadius="10" Padding="14" Margin="0,0,0,0">
+      <StackPanel>
+        <TextBlock Text="{DynamicResource S_Cfg}" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource Theme.Fg}" Margin="0,0,0,8"/>
+        <TextBlock Text="{DynamicResource S_DataSrc}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Theme.FgDim}" Margin="0,0,0,4"/>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource S_SrcDir}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center"/>
+          <TextBox x:Name="srcBox" Grid.Row="0" Grid.Column="1" Text=""
+                   ToolTip="{DynamicResource S_SrcDirTip}"/>
+          <Button x:Name="srcBtn" Grid.Row="0" Grid.Column="2" Content="{DynamicResource S_Browse}" Width="80" Margin="8,0,0,0" Click="SrcBtn_Click"/>
+
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="{DynamicResource S_OutDir}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="0,8,0,0"/>
+          <TextBox x:Name="outBox" Grid.Row="1" Grid.Column="1" Text="" Margin="0,8,0,0"
+                   ToolTip="{DynamicResource S_OutDirTip}"/>
+          <Button x:Name="outBtn" Grid.Row="1" Grid.Column="2" Content="{DynamicResource S_Browse}" Width="80" Margin="8,8,0,0" Click="OutBtn_Click"/>
+        </Grid>
+
+        <TextBlock Text="{DynamicResource S_EngineSec}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Theme.FgDim}" Margin="0,10,0,4"/>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource S_Engine}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center"/>
+          <ComboBox x:Name="engineBox" Grid.Row="0" Grid.Column="1" MinHeight="30"
+                    SelectionChanged="EngineBox_SelectionChanged"
+                    ToolTip="{DynamicResource S_EngineTip}">
+            <ComboBoxItem Tag="hybrid-engine" IsSelected="True" Content="{DynamicResource S_EngHybrid}"/>
+            <ComboBoxItem Tag="vlm-engine" Content="{DynamicResource S_EngVlm}"/>
+            <ComboBoxItem Tag="pipeline" Content="{DynamicResource S_EngPipeline}"/>
+            <ComboBoxItem Tag="vlm-http-client" Content="{DynamicResource S_EngVlmHttp}"/>
+            <ComboBoxItem Tag="hybrid-http-client" Content="{DynamicResource S_EngHybridHttp}"/>
+            <ComboBoxItem Tag="paddleocr" Content="{DynamicResource S_EngPaddle}"/>
+            <ComboBoxItem Tag="mineru4x" Content="{DynamicResource S_EngMineru4x}"/>
+            <ComboBoxItem Tag="windows-ocr" Content="{DynamicResource S_EngWinOcr}"/>
+          </ComboBox>
+
+          <TextBlock x:Name="engineHint" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                     Text="" FontStyle="Italic" Foreground="{DynamicResource Theme.FgDim}" TextWrapping="Wrap"
+                     Margin="0,4,0,0" Visibility="Collapsed"/>
+
+          <TextBlock Grid.Row="2" Grid.Column="0" Text="{DynamicResource S_Effort}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="0,8,0,0"/>
+          <ComboBox x:Name="effortBox" Grid.Row="2" Grid.Column="1" Width="260" HorizontalAlignment="Left" Margin="0,8,0,0"
+                    ToolTip="{DynamicResource S_EffortTip}">
+            <ComboBoxItem Tag="medium" IsSelected="True" Content="{DynamicResource S_EffortMed}"/>
+            <ComboBoxItem Tag="high" Content="{DynamicResource S_EffortHigh}"/>
+          </ComboBox>
+        </Grid>
+
+        <TextBlock Text="{DynamicResource S_Perf}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Theme.FgDim}" Margin="0,10,0,4"/>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="{DynamicResource S_CpuThreads}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center"/>
+          <ComboBox x:Name="cpuBox" Grid.Row="0" Grid.Column="1"
+                    ToolTip="{DynamicResource S_CpuThreadsTip}">
+            <ComboBoxItem Tag="1" Content="{DynamicResource S_Cpu1}"/>
+            <ComboBoxItem Tag="2" Content="{DynamicResource S_Cpu2}" IsSelected="True"/>
+            <ComboBoxItem Tag="4" Content="{DynamicResource S_Cpu4}"/>
+            <ComboBoxItem Tag="8" Content="{DynamicResource S_Cpu8}"/>
+            <ComboBoxItem Tag="0" Content="{DynamicResource S_CpuAuto}"/>
+          </ComboBox>
+
+          <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,10,0,0">
+            <CheckBox x:Name="apiModeChk"
+                      Content="{DynamicResource S_ApiMode}"
+                      IsChecked="True" Checked="ApiModeChk_Changed" Unchecked="ApiModeChk_Changed"
+                      VerticalAlignment="Center" Margin="0,0,18,8"
+                      ToolTip="{DynamicResource S_ApiModeTip}"/>
+            <TextBlock Text="{DynamicResource S_Conc}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox x:Name="concBox" Width="70" VerticalAlignment="Center"
+                      ToolTip="{DynamicResource S_ConcTip}">
+              <ComboBoxItem Tag="1" Content="1"/>
+              <ComboBoxItem Tag="2" Content="2" IsSelected="True"/>
+              <ComboBoxItem Tag="3" Content="3"/>
+            </ComboBox>
+          </StackPanel>
+        </Grid>
+
+        <TextBlock Text="{DynamicResource S_OtherOpts}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Theme.FgDim}" Margin="0,10,0,4"/>
+
+        <StackPanel x:Name="urlRow" Orientation="Horizontal" Margin="0,10,0,0" Visibility="Collapsed">
+          <TextBlock Text="{DynamicResource S_ServerUrl}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+          <TextBox x:Name="urlBox" Width="380" Text="http://127.0.0.1:8000/v1"/>
+          <TextBlock Text="{DynamicResource S_ApiKey}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="12,0,6,0"/>
+          <TextBox x:Name="apiKeyBox" Width="160" Text=""/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+          <CheckBox x:Name="resumeChk" Content="{DynamicResource S_Resume}" IsChecked="True" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_ResumeTip}"/>
+          <CheckBox x:Name="smallFirstChk" Content="{DynamicResource S_SmallFirst}" IsChecked="True"
+                    ToolTip="{DynamicResource S_SmallFirstTip}"/>
+        </StackPanel>
+
+        <WrapPanel Margin="0,8,0,0">
+          <CheckBox x:Name="subDirsChk" Content="{DynamicResource S_SubDirs}" IsChecked="True" Margin="0,0,18,8"/>
+          <CheckBox x:Name="retryChk" Content="{DynamicResource S_Retry}" IsChecked="True" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_RetryTip}"/>
+          <CheckBox x:Name="retryHighChk" Content="{DynamicResource S_RetryHigh}" IsChecked="False" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_RetryHighTip}"/>
+          <CheckBox x:Name="smartRoutingChk" Content="{DynamicResource S_SmartRouting}" IsChecked="False" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_SmartRoutingTip}"
+                    Checked="SmartRoutingChk_Changed" Unchecked="SmartRoutingChk_Changed"/>
+          <CheckBox x:Name="crossCheckChk" Content="{DynamicResource S_CrossCheck}" IsChecked="True" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_CrossCheckTip}"/>
+          <CheckBox x:Name="joinLinesChk" Content="{DynamicResource S_JoinLines}" IsChecked="False" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_JoinLinesTip}"/>
+          <CheckBox x:Name="squeezeBlanksChk" Content="{DynamicResource S_SqueezeBlanks}" IsChecked="False" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_SqueezeBlanksTip}"/>
+          <StackPanel Orientation="Horizontal" Margin="0,0,18,8" VerticalAlignment="Center"
+                      ToolTip="{DynamicResource S_TimeoutTip}">
+            <TextBlock Text="{DynamicResource S_Timeout}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox x:Name="timeoutBox" Width="140">
+              <ComboBoxItem Tag="0" Content="{DynamicResource S_TimeoutUnlimited}"/>
+              <ComboBoxItem Tag="15" Content="{DynamicResource S_Timeout15}"/>
+              <ComboBoxItem Tag="30" Content="{DynamicResource S_Timeout30}" IsSelected="True"/>
+              <ComboBoxItem Tag="60" Content="{DynamicResource S_Timeout60}"/>
+            </ComboBox>
+          </StackPanel>
+        </WrapPanel>
+
+        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+          <Button x:Name="startBtn" Content="{DynamicResource S_Start}" Width="160" Height="40" FontWeight="Bold" Foreground="White"
+                  Background="#22C55E" Click="StartBtn_Click"/>
+          <Button x:Name="stopBtn" Content="{DynamicResource S_Stop}" Width="120" Height="40" Margin="12,0,0,0" Foreground="White"
+                  FontWeight="Bold" Background="#EF4444" IsEnabled="False" Click="StopBtn_Click"/>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+    </TabItem>
+
+    <!-- Card Tien do -->
+    <TabItem Header="{DynamicResource S_NavProgress}">
+    <Border x:Name="cardProgress" Background="{DynamicResource Theme.CardBg}" BorderBrush="{DynamicResource Theme.Border}" BorderThickness="1"
+            CornerRadius="10" Padding="14" Margin="0,0,0,0">
+      <StackPanel>
+        <Grid Margin="0,0,0,6">
+          <TextBlock Text="{DynamicResource S_ProgTitle}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}"/>
+          <TextBlock x:Name="pctText" Text="0.0%" FontSize="16" FontWeight="Bold" Foreground="#3B82F6" HorizontalAlignment="Right"/>
+        </Grid>
+
+        <ProgressBar x:Name="progressBar" Value="0" Minimum="0" Maximum="100"/>
+
+        <UniformGrid Columns="6" Margin="0,12,0,0">
+          <StackPanel Margin="4,0">
+            <TextBlock x:Name="stDoneText" Text="0" FontSize="18" FontWeight="Bold" Foreground="#107C10" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S_StDone}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+          </StackPanel>
+          <StackPanel Margin="4,0">
+            <TextBlock x:Name="stRemainText" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Theme.Fg}" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S_StRemain}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+          </StackPanel>
+          <StackPanel Margin="4,0">
+            <TextBlock x:Name="stPagesText" Text="—" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Theme.Fg}" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S_StPages}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+          </StackPanel>
+          <StackPanel Margin="4,0">
+            <TextBlock x:Name="stErrText" Text="0" FontSize="18" FontWeight="Bold" Foreground="#D13438" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S_StErrors}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+          </StackPanel>
+          <StackPanel Margin="4,0">
+            <TextBlock x:Name="stSuspText" Text="0" FontSize="18" FontWeight="Bold" Foreground="#B45309" HorizontalAlignment="Center"
+                       ToolTip="{DynamicResource S_StSuspTip}"/>
+            <TextBlock Text="{DynamicResource S_StSusp}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+          </StackPanel>
+          <StackPanel Margin="4,0">
+            <TextBlock x:Name="stSkipText" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource Theme.Fg}" HorizontalAlignment="Center"/>
+            <TextBlock Text="{DynamicResource S_StSkip}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+          </StackPanel>
+        </UniformGrid>
+
+        <Grid Margin="0,12,0,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock x:Name="curFileText" Text="" Foreground="{DynamicResource Theme.Fg}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+          <TextBlock x:Name="curPageText" Grid.Column="1" Text="" Foreground="{DynamicResource Theme.FgDim}" Margin="12,0,0,0" VerticalAlignment="Center"/>
+        </Grid>
+
+        <TextBlock x:Name="etaText" Text="" Foreground="{DynamicResource Theme.FgDim}" Margin="0,6,0,0"/>
+
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+          <Button x:Name="pauseBtn" Content="{DynamicResource S_Pause}" Width="140" Height="36" FontWeight="Bold" Foreground="White"
+                  Background="#F59E0B" IsEnabled="False" Click="PauseBtn_Click"/>
+          <Button x:Name="stopBtn2" Content="{DynamicResource S_Stop}" Width="120" Height="36" Margin="12,0,0,0" Foreground="White"
+                  FontWeight="Bold" Background="#EF4444" IsEnabled="False" Click="StopBtn_Click"/>
+        </StackPanel>
+
+        <Separator Margin="0,12,0,8"/>
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="{DynamicResource S_LogTitle}" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource Theme.Fg}" VerticalAlignment="Center"/>
+          <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <Button x:Name="openOutBtn" Content="{DynamicResource S_OpenOutBtn}" Height="28" Padding="12,0" Margin="0,0,8,0"
+                    Background="{DynamicResource Theme.BtnBg}" Click="OpenOutBtn_Click"
+                    ToolTip="{DynamicResource S_OpenOutBtnTip}"/>
+            <Button x:Name="openReportBtn" Content="{DynamicResource S_OpenReportBtn}" Height="28" Padding="12,0" Margin="0,0,8,0"
+                    Background="{DynamicResource Theme.BtnBg}" Click="OpenReportBtn_Click"
+                    ToolTip="{DynamicResource S_OpenReportBtnTip}"/>
+            <Button x:Name="clearLogBtn" Content="{DynamicResource S_ClearLogBtn}" Height="28" Padding="12,0"
+                    Background="{DynamicResource Theme.BtnBg}" Click="ClearLogBtn_Click"
+                    ToolTip="{DynamicResource S_ClearLogBtnTip}"/>
+          </StackPanel>
+        </Grid>
+        <TextBox x:Name="logBox" IsReadOnly="True" AcceptsReturn="True" Height="200"
+                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                 FontFamily="Consolas" FontSize="12" TextWrapping="NoWrap"
+                 Background="{DynamicResource Theme.CardBg}" Foreground="{DynamicResource Theme.Fg}" BorderThickness="0"/>
+      </StackPanel>
+    </Border>
+    </TabItem>
+
+    <!-- Card Thu vien ket qua -->
+    <TabItem Header="{DynamicResource S_NavLibrary}">
+    <Border x:Name="cardLibrary" Background="{DynamicResource Theme.CardBg}" BorderBrush="{DynamicResource Theme.Border}" BorderThickness="1"
+            CornerRadius="10" Padding="14" Margin="0,0,0,0">
+      <StackPanel>
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="{DynamicResource S_LibTitle}" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource Theme.Fg}" VerticalAlignment="Center"
+                     ToolTip="{DynamicResource S_LibTip}"/>
+          <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <TextBox x:Name="searchBox" Width="260" Margin="0,0,8,0"
+                     ToolTip="{DynamicResource S_SearchTip}"/>
+            <Button x:Name="searchBtn" Content="{DynamicResource S_SearchBtn}" Height="28" Padding="12,0" Margin="0,0,8,0"
+                    Background="{DynamicResource Theme.BtnBg}" Click="SearchBtn_Click"
+                    ToolTip="{DynamicResource S_SearchBtnTip}"/>
+            <Button x:Name="openResultBtn" Content="{DynamicResource S_OpenFileBtn}" Height="28" Padding="12,0"
+                    Background="{DynamicResource Theme.BtnBg}" Click="OpenResultBtn_Click"
+                    ToolTip="{DynamicResource S_OpenFileBtnTip}"/>
+          </StackPanel>
+        </Grid>
+        <TextBlock Text="{DynamicResource S_LibDesc}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}" Margin="0,0,0,6" TextWrapping="Wrap"/>
+        <TextBlock x:Name="resultInfo" Text="" Foreground="{DynamicResource Theme.FgDim}" FontSize="12" Margin="0,0,0,4"/>
+        <ListBox x:Name="resultsBox" Height="100" FontFamily="Consolas" FontSize="12"
+                 VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 MouseDoubleClick="ResultsBox_DoubleClick"
+                 ToolTip="{DynamicResource S_ResultsTip}"/>
+      </StackPanel>
+    </Border>
+    </TabItem>
+
+    <!-- Card Kiem tra he thong -->
+    <TabItem Header="{DynamicResource S_NavSystem}">
+    <Border x:Name="cardSystem" Background="{DynamicResource Theme.CardBg}" BorderBrush="{DynamicResource Theme.Border}" BorderThickness="1"
+            CornerRadius="10" Padding="14" Margin="0,0,0,0">
+      <StackPanel>
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="{DynamicResource S_SysTitle}" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource Theme.Fg}" VerticalAlignment="Center"
+                     ToolTip="{DynamicResource S_SysTip}"/>
+          <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <Button x:Name="checkBtn" Content="{DynamicResource S_CheckBtn}" Height="28" Padding="12,0" Margin="0,0,8,0"
+                    Background="{DynamicResource Theme.BtnBg}" Click="CheckBtn_Click"
+                    ToolTip="{DynamicResource S_CheckBtnTip}"/>
+            <Button x:Name="installBtn" Content="{DynamicResource S_InstallBtn}" Height="28" Padding="12,0"
+                    Background="{DynamicResource Theme.BtnBg}" IsEnabled="False" Click="InstallBtn_Click"
+                    ToolTip="{DynamicResource S_InstallBtnTip}"/>
+          </StackPanel>
+        </Grid>
+        <ListView x:Name="sysList" Height="150" SelectionMode="Single">
+          <ListView.View>
+            <GridView>
+              <GridViewColumn Header="{DynamicResource S_SysColState}" Width="130" DisplayMemberBinding="{Binding TT}"/>
+              <GridViewColumn Header="{DynamicResource S_SysColItem}" Width="200" DisplayMemberBinding="{Binding Muc}"/>
+              <GridViewColumn Header="{DynamicResource S_SysColDetail}" Width="360" DisplayMemberBinding="{Binding ChiTiet}"/>
+              <GridViewColumn Header="{DynamicResource S_SysColAct}" Width="80">
+                <GridViewColumn.CellTemplate>
+                  <DataTemplate>
+                    <Button Content="{DynamicResource S_InstallOne}" Padding="8,2" Tag="{Binding Item}"
+                            IsEnabled="{Binding CoTheCai}" Click="SysInstallOne_Click"/>
+                  </DataTemplate>
+                </GridViewColumn.CellTemplate>
+              </GridViewColumn>
+            </GridView>
+          </ListView.View>
+          <ListView.ItemContainerStyle>
+            <Style TargetType="ListViewItem">
+              <Setter Property="Foreground" Value="{Binding Mau}"/>
+            </Style>
+          </ListView.ItemContainerStyle>
+        </ListView>
+        <TextBlock x:Name="sysSummary" Text="{DynamicResource S_SysIdle}" Foreground="{DynamicResource Theme.FgDim}" FontSize="12" Margin="0,6,0,0" TextWrapping="Wrap"/>
+      </StackPanel>
+    </Border>
+    </TabItem>
+    <!-- Tab Cai dat -->
+    <TabItem Header="{DynamicResource S_NavSettings}">
+    <Border x:Name="cardSettings" Background="{DynamicResource Theme.CardBg}" BorderBrush="{DynamicResource Theme.Border}" BorderThickness="1"
+            CornerRadius="10" Padding="14" Margin="0,0,0,0">
+      <StackPanel>
+        <TextBlock Text="{DynamicResource S_SetUi}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Theme.FgDim}" Margin="0,0,0,6"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+          <Button x:Name="themeBtn" Content="☀ Sáng" Height="30" Padding="14,0" Margin="0,0,8,0"
+                  Background="{DynamicResource Theme.BtnBg}" Click="ThemeBtn_Click"
+                  ToolTip="{DynamicResource S_ThemeTip}"/>
+          <Button x:Name="langBtn" Content="🌐 VI" Height="30" Padding="14,0"
+                  Background="{DynamicResource Theme.BtnBg}" Click="LangBtn_Click"
+                  ToolTip="{DynamicResource S_LangTip}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,4" VerticalAlignment="Center">
+          <TextBlock Text="{DynamicResource S_Accent}" FontSize="12" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+          <Button Content="" Tag="#3B82F6;#22D3EE" Width="28" Height="28" Margin="0,0,6,0" Background="#3B82F6" Click="AccentBtn_Click" ToolTip="{DynamicResource S_AccBlue}"/>
+          <Button Content="" Tag="#22C55E;#A3E635" Width="28" Height="28" Margin="0,0,6,0" Background="#22C55E" Click="AccentBtn_Click" ToolTip="{DynamicResource S_AccGreen}"/>
+          <Button Content="" Tag="#F59E0B;#EF4444" Width="28" Height="28" Margin="0,0,6,0" Background="#F59E0B" Click="AccentBtn_Click" ToolTip="{DynamicResource S_AccOrange}"/>
+          <Button Content="" Tag="#8B5CF6;#EC4899" Width="28" Height="28" Background="#8B5CF6" Click="AccentBtn_Click" ToolTip="{DynamicResource S_AccPurple}"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,8,0,0" VerticalAlignment="Center">
+          <TextBlock Text="{DynamicResource S_FontSize}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+          <Slider x:Name="fontSlider" Width="200" Minimum="80" Maximum="150" Value="100"
+                  TickFrequency="5" IsSnapToTickEnabled="True"
+                  VerticalAlignment="Center" ValueChanged="FontSlider_ValueChanged"/>
+          <TextBlock x:Name="fontVal" Text="100%" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="8,0,0,0" Width="44"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,8,0,0" VerticalAlignment="Center"
+                    ToolTip="{DynamicResource S_OpacityTip}">
+          <TextBlock Text="{DynamicResource S_Opacity}" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+          <Slider x:Name="opacitySlider" Width="200" Minimum="40" Maximum="100" Value="100"
+                  TickFrequency="5" IsSnapToTickEnabled="True"
+                  VerticalAlignment="Center" ValueChanged="OpacitySlider_ValueChanged"/>
+          <TextBlock x:Name="opacityVal" Text="100%" Foreground="{DynamicResource Theme.FgDim}" VerticalAlignment="Center" Margin="8,0,0,0" Width="44"/>
+        </StackPanel>
+        <CheckBox x:Name="topmostChk" Content="{DynamicResource S_Topmost}" IsChecked="False" Margin="0,10,0,0"
+                  ToolTip="{DynamicResource S_TopmostTip}"
+                  Checked="TopmostChk_Changed" Unchecked="TopmostChk_Changed"/>
+        <TextBlock Text="{DynamicResource S_SetBehavior}" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource Theme.FgDim}" Margin="0,14,0,6"/>
+        <WrapPanel>
+          <CheckBox x:Name="soundChk" Content="{DynamicResource S_Sound}" IsChecked="True" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_SoundTip}"/>
+          <CheckBox x:Name="autostartChk" Content="{DynamicResource S_Autostart}" IsChecked="False" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_AutostartTip}"
+                    Checked="AutostartChk_Changed" Unchecked="AutostartChk_Changed"/>
+          <CheckBox x:Name="noSleepChk" Content="{DynamicResource S_NoSleep}" IsChecked="True" Margin="0,0,18,8"/>
+          <CheckBox x:Name="shutdownChk" Content="{DynamicResource S_Shutdown}" IsChecked="False" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_ShutdownTip}"/>
+          <CheckBox x:Name="watchChk" Content="{DynamicResource S_Watch}" IsChecked="False" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_WatchTip}"
+                    Checked="WatchChk_Changed" Unchecked="WatchChk_Changed"/>
+          <CheckBox x:Name="detailLogChk" Content="{DynamicResource S_DetailLog}" IsChecked="False" Margin="0,0,18,8"
+                    ToolTip="{DynamicResource S_DetailLogTip}"/>
+        </WrapPanel>
+      </StackPanel>
+    </Border>
+    </TabItem>
+    </TabControl>
+
+      </StackPanel>
+      </ScrollViewer>
+    </Grid>
+
+    <!-- Toast thong bao goc phai duoi -->
+    <Border x:Name="toastBorder" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Margin="0,0,170,24" Background="{DynamicResource Theme.CardBg}" BorderBrush="{DynamicResource Theme.Accent}" BorderThickness="1"
+            CornerRadius="8" Padding="14,10" Visibility="Collapsed" MaxWidth="380">
+      <TextBlock x:Name="toastText" Text="" Foreground="{DynamicResource Theme.Fg}" TextWrapping="Wrap" FontSize="12"/>
+    </Border>
+  </Grid>
+</Window>

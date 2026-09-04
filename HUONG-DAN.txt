@@ -1,0 +1,177 @@
+﻿============================================================
+ MinerU 2.5 — Batch OCR Tool (bản portable)
+============================================================
+
+1. GIỚI THIỆU
+-------------
+Tool giao diện Windows, chạy OCR hàng loạt file PDF bằng engine
+MinerU 2.5 (chuyển PDF thành Markdown + ảnh + JSON).
+Đã đóng gói sẵn .NET bên trong — KHÔNG cần cài thêm gì để mở tool.
+
+ 2. CÁCH DÙNG
+------------
+- Copy cả thư mục này sang máy đích.
+- Bỏ các file PDF vào thư mục con:  downloads\
+  (hoặc bấm "Chọn…" để trỏ tới thư mục PDF bất kỳ).
+- Chạy  MinerU25Tool.exe  rồi bấm  BẮT ĐẦU (tab Cấu hình).
+- Theo dõi ở tab Tiến độ (có nút TẠM DỪNG / TIẾP TỤC / DỪNG
+  và nhật ký ngay bên dưới). Kết quả nằm trong:
+  mineru25-out\<tên file>\<phương pháp>\<tên file>.md
+- Các tab: Cấu hình | Tiến độ | Tìm kiếm | Hệ thống | Cài đặt.
+
+3. CÁC TUỲ CHỌN
+---------------
+- Engine:
+  + hybrid-engine — chất lượng tốt nhất (khuyến nghị)
+  + vlm-engine    — chỉ VLM, không dùng API thường trú được
+  + pipeline      — OCR truyền thống (PP-OCRv6), tốt cho file scan
+  + vlm-http-client / hybrid-http-client — chạy VLM trên server GPU
+    từ xa (xem file HUONG-DAN-GPU-TU-XA.md)
+  + paddleocr     — PaddleOCR PP-StructureV3 (engine thứ 2): OCR scan
+    nhanh, VRAM ~1-2GB, chạy tuần tự từng file. Cần cài paddleocr vào
+    venv "paddle-env" đặt cạnh tool (hoặc tạo paddle-path.txt trỏ tới
+    paddlex.exe). Lần đầu chạy sẽ tải model (~300MB). Output: .md +
+    imgs + table html/json.
+  + mineru4x        — MinerU 4.x tier basic (~medium): NHANH NHẤT hiện tại,
+    VRAM ~2.6GB, server thường trú (tool tự khởi động). Cần venv
+    "mineru4x-venv" đặt cạnh tool (hoặc tạo mineru4x-path.txt trỏ tới
+    mineru-kit.exe); model local được tái dùng tự động. Lưu ý: không có
+    effort high, không hiển thị tiến độ theo trang (ETA theo file).
+    Chi tiết so sánh: xem file SOSANH-MINERU4-vs-345.md.
+- Effort (chỉ với hybrid):
+  + medium — mặc định, nhanh hơn nhiều, chất lượng gần bằng high
+  + high   — chất lượng cao nhất, chậm hơn
+- Chạy qua mineru-api thường trú: tool tự khởi động mineru-api,
+  nạp model vào VRAM 1 lần rồi xử lý toàn bộ batch (không nạp lại
+  model mỗi file → nhanh hơn rõ rệt). Chỉ áp dụng hybrid/pipeline;
+  nếu API không khởi động được, tool tự quay về chế độ cũ.
+- Số file đồng thời: 1 / 2 / 3 — chạy song song nhiều file khi
+  dùng API thường trú hoặc server từ xa. Mặc định 2.
+- Bỏ qua file đã có kết quả (resume): chạy lại sẽ tự bỏ qua file xong rồi
+- File nhỏ xử lý trước: file nhỏ chạy trước để thấy kết quả sớm
+- Quét cả thư mục con: quét PDF trong mọi thư mục con / chỉ thư mục gốc
+- Tự chạy lại 1 lần khi lỗi: file bị lỗi sẽ được thử lại 1 lần
+- Chạy lại file lỗi với effort=high: lần thử lại sẽ nâng effort lên
+  high (nếu đang dùng medium) để tăng cơ hội thành công
+- Timeout mỗi file: mặc định 30 phút — file nào chạy quá lâu sẽ bị
+  huỷ và tính là lỗi (để không kẹt cả batch)
+- Không cho máy ngủ khi đang chạy (tab Cài đặt): giữ máy thức
+  suốt batch
+- Tắt máy khi quét xong (tab Cài đặt): batch xong sẽ tự lên lịch
+  tắt máy sau 2 phút
+  (muốn huỷ: mở cmd gõ  shutdown /a)
+- Luồng CPU cho OCR: 1 / 2 / 4 / 8 / Tự động. Mặc định 2 luồng để
+  nhẹ máy (vẫn làm việc khác được). Chọn "Tự động" để OCR nhanh
+  nhất nhưng sẽ dùng hết lõi CPU.
+- Nhật ký chi tiết (tab Cài đặt, dành cho gỡ lỗi): mặc định TẮT — nhật ký đã
+  được lọc gọn (chỉ giữ thông tin chính + lỗi/cảnh báo). Bật lên
+  nếu muốn xem toàn bộ output của mineru.
+
+4. TRẠNG THÁI / TIẾN ĐỘ
+-----------------------
+- Giao diện hiển thị: % tổng thể, số file hoàn thành / còn lại,
+  trang đã quét / tổng trang, tốc độ (trang/phút), thời gian dự kiến
+  còn lại, file hiện tại đang quét trang mấy/tổng trang.
+- Tiến độ cũng được ghi vào:  mineru25-out\batch-state.json
+  (dừng máy giữa chừng, chạy lại tool sẽ tự tiếp nối).
+- Kiểm tra chất lượng tự động: sau mỗi file thành công, tool soát
+  nhanh file .md (độ dài, ký tự lạ). File "khả nghi" được ghi vào
+  nhật ký dòng [KTRA] và lưu trong batch-state.json để bạn xem lại.
+- Khi batch kết thúc, tool ghi báo cáo tổng hợp:
+  mineru25-out\batch-report.html (mở bằng trình duyệt).
+- Nhật ký đầy đủ:  mineru25-out\batch-log.txt
+- Nút DỪNG (tab Cấu hình và Tiến độ): dừng an toàn, file đang
+  quét dở sẽ bị huỷ và chạy lại khi bạn bấm BẮT ĐẦU lần sau.
+- Nút TẠM DỪNG / TIẾP TỤC (tab Tiến độ): tạm ngưng nhận file
+  mới (file đang quét vẫn chạy cho xong), bấm tiếp tục để chạy tiếp.
+- Tab Cài đặt: cỡ chữ giao diện (Nhỏ/Vừa/Lớn), độ trong suốt
+  cửa sổ, luôn nằm trên cùng, âm báo khi xong, mở cùng Windows,
+  giao diện Sáng/Tối, ngôn ngữ Việt/Anh, màu nhấn. Mọi lựa chọn
+  được nhớ lại ở lần mở sau (file settings.txt cạnh tool).
+- Chạy không cần giao diện:
+    MinerU25Tool.exe --autostart --src "D:\pdf" --out "D:\ket-qua"
+
+5. MÁY ĐÍCH CẦN CÀI GÌ ĐỂ OCR ĐƯỢC?
+-----------------------------------
+Tool chỉ là phần điều khiển. Engine OCR (mineru) phải được cài trên
+máy đích:
+
+  a) Cài Python 3.11 trở lên (64-bit), tick "Add python.exe to PATH"
+     https://www.python.org/downloads/
+     (mẹo: mở tool, bấm "Kiểm tra" ở card KIỂM TRA HỆ THỐNG rồi
+     "Cài đặt tự động" — tool tự lo các bước b, d và venv Paddle/MinerU4x)
+  b) Mở cmd, chạy:
+        pip install mineru[core]
+  c) GPU NVIDIA + driver mới nhất: chạy nhanh (khuyến nghị).
+     Không có GPU vẫn chạy được nhưng rất chậm.
+  d) Model MinerU2.5 (1.2B):
+     - Cách 1 (cần mạng): mineru tự tải model ở lần chạy đầu tiên.
+     - Cách 2 (offline): copy thư mục model từ máy gốc sang, rồi tạo
+       file  %USERPROFILE%\mineru.json  với nội dung tối thiểu:
+
+       {
+           "models-dir": {
+               "vlm": "C:\\duong-dan-toi\\MinerU2.5-2509-1.2B"
+           },
+           "model-source": "huggingface"
+       }
+
+       (thay đường dẫn cho đúng; trong JSON dấu \ phải viết \\)
+     - Model mới MinerU2.5-Pro-2605-1.2B cho chất lượng cao hơn
+       (đặc biệt bảng biểu). Nếu có thư mục model này, trỏ
+       "vlm" trong mineru.json tới nó.
+
+6. NẾU TOOL KHÔNG TÌM THẤY mineru.exe
+-------------------------------------
+- Tool tự tìm mineru.exe trong PATH và các thư mục Python phổ biến.
+- Nếu không thấy, tool sẽ hỏi bạn chọn file mineru.exe thủ công
+  (thường nằm ở: ...\Python3xx\Scripts\mineru.exe).
+- Đường dẫn bạn chọn được lưu vào file  mineru-path.txt  nằm cạnh
+  MinerU25Tool.exe — có thể mở file này sửa tay nếu cần.
+
+7. KIỂM TRA HỆ THỐNG + TỰ CÀI ĐẶT (máy mới)
+---------------------------------------------
+Card "KIỂM TRA HỆ THỐNG" quét các thành phần tool cần:
+Python 3.10+, pip, MinerU 3.x, mineru.json, GPU/driver, torch CUDA,
+PaddleOCR (venv paddle-env), MinerU 4.x (venv mineru4x-venv), đĩa trống.
+- Bấm "Kiểm tra": hiện [OK]/[THIEU] từng mục.
+- Bấm "Cài đặt tự động": tool tự cài các mục còn thiếu bằng pip
+  (đúng phiên bản đã kiểm chứng: mineru 3.4.5, paddle cu126, torch cu130...),
+  tự dựng venv và ghi file *-path.txt. Mất 10-20 phút, cần mạng.
+- Không tự cài được: Python (mở trang download + gợi ý lệnh winget),
+  driver GPU (xem mục 8), model (~2GB, tự tải ở lần chạy đầu, cần mạng).
+
+8. CHẠY NHANH HƠN VỚI GPU TỪ XA
+-------------------------------
+GPU yếu (vd T400 4GB) là nút thắt lớn nhất. Có thể chạy phần VLM
+trên GPU mạnh thuê ngoài (RunPod, Vast.ai, Colab...) — nhanh hơn
+10-40 lần. Xem hướng dẫn chi tiết:  HUONG-DAN-GPU-TU-XA.md
+
+9. TÍNH NĂNG MỚI (smart routing / chéo kiểm / watch / thư viện)
+---------------------------------------------------------------
+- Tự động chọn engine theo file: file text (nhiều chữ) → engine nhanh
+  (MinerU 4.x, nếu không có thì hybrid), file scan (ít chữ) → engine OCR
+  (PaddleOCR, nếu không có thì pipeline). Tool probe 5 trang đầu mỗi file
+  (ngưỡng 150 ký tự/trang). Chạy tuần tự để an toàn VRAM 4GB.
+- Chéo kiểm file khả nghi (mặc định BẬT): file bị đánh dấu KHA NGHI sẽ
+  chạy thêm 1 engine khác, giữ bản nhiều chữ hơn. Bản thua bị xóa .md,
+  cả 2 thư mục đều có marker để resume không chạy lại.
+- Tự quét file mới (tab Cài đặt): tick để tool theo dõi thư mục
+  nguồn; file PDF mới
+  ổn định sau 10 giây sẽ tự chạy batch (resume bỏ qua file cũ).
+- Tab Tìm kiếm: gõ từ khóa để tìm trong mọi file .md đã quét
+  (từ khóa ≥ 2 ký tự, tối đa 50 kết quả), nháy đúp để mở file.
+
+9. LƯU Ý
+--------
+- Mặc định batch chạy song song 2 file qua mineru-api thường trú.
+  Nếu gặp lỗi lạ, thử tắt "Chạy qua mineru-api thường trú" và đặt
+  "Số file đồng thời" = 1 để về chế độ tuần tự cũ.
+- Về CPU/GPU: model OCR chạy trên GPU (VRAM ~3.8GB), nhưng mỗi trang
+  cần xử lý trước trên CPU (render PDF, cắt ảnh...). Mặc định engine
+  dùng MỌI lõi CPU; tuỳ chọn "Luồng CPU cho OCR" (mặc định 2 luồng)
+  giúp máy nhẹ hẳn để bạn làm việc, đổi lại OCR chậm hơn một chút.
+- Với hàng nghìn trang, batch có thể mất nhiều ngày — nên tick
+  "Không cho máy ngủ" và "Tắt máy khi quét xong".
+- File kết quả .md nằm trong thư mục con có tên trùng tên PDF
+  (tên quá dài sẽ bị cắt bớt, giống quy tắc của MinerU).
