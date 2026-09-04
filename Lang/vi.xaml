@@ -149,7 +149,11 @@
     <s:String x:Key="S_SysD_TorchFailAt">Không nạp được torch tại </s:String>
     <s:String x:Key="S_SysD_WinLangs">ngôn ngữ (miễn phí, CPU), vd:</s:String>
     <s:String x:Key="S_SysD_WinLang1">ngôn ngữ (miễn phí, CPU), vd:</s:String>
-    <s:String x:Key="S_SysSumItems">mục</s:String>    <s:String x:Key="S_SysD_WinNf">Máy chưa cài gói OCR (Settings &gt; Time &amp; language &gt; Language)</s:String>
+    <s:String x:Key="S_SysSumItems">mục</s:String>
+    <s:String x:Key="S_PageRange">Quét từ trang</s:String>
+    <s:String x:Key="S_PageTo">đến trang</s:String>
+    <s:String x:Key="S_PageTip">Chỉ quét khoảng trang (bỏ bìa/mục lục). Bỏ trống = quét cả file. Áp dụng engine MinerU 3.x.</s:String>
+    <s:String x:Key="S_DropFiles">Đã nhận {0} file PDF từ kéo-thả.</s:String>    <s:String x:Key="S_SysD_WinNf">Máy chưa cài gói OCR (Settings &gt; Time &amp; language &gt; Language)</s:String>
     <s:String x:Key="S_SysD_Free">Còn </s:String>
     <s:String x:Key="S_SysD_Unknown">Không xác định: </s:String>
     <s:String x:Key="S_SysD_Installed">Đã cài xong</s:String>
@@ -161,7 +165,7 @@
     <s:String x:Key="S_StSusp">Khả nghi</s:String>
     <s:String x:Key="S_StSuspTip">File quét xong nhưng chất lượng đáng ngờ (ít chữ/ký tự lạ) — nên kiểm tra lại</s:String>
     <s:String x:Key="S_StSkip">Bỏ qua</s:String>
-    <s:String x:Key="S_LibTitle">THƯ VIỆN KẾT QUẢ</s:String>
+    <s:String x:Key="S_LibTitle">TÌM KIẾM</s:String>
     <s:String x:Key="S_LibTip">Tìm kiếm toàn văn trong các file .md đã quét</s:String>
     <s:String x:Key="S_SearchTip">Từ khóa (tối thiểu 2 ký tự), Enter để tìm</s:String>
     <s:String x:Key="S_SearchBtn">Tìm</s:String>

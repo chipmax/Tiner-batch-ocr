@@ -150,6 +150,10 @@
     <s:String x:Key="S_SysD_WinLangs">languages (free, CPU), e.g.:</s:String>
     <s:String x:Key="S_SysD_WinLang1">language (free, CPU), e.g.:</s:String>
     <s:String x:Key="S_SysSumItems">items</s:String>
+    <s:String x:Key="S_PageRange">Pages from</s:String>
+    <s:String x:Key="S_PageTo">to</s:String>
+    <s:String x:Key="S_PageTip">Only scan a page range (skip covers/TOC). Empty = whole file. MinerU 3.x engines only.</s:String>
+    <s:String x:Key="S_DropFiles">Received {0} PDF file(s) via drag-drop.</s:String>
     <s:String x:Key="S_SysD_WinNf">No OCR pack installed (Settings &gt; Time &amp; language &gt; Language)</s:String>
     <s:String x:Key="S_SysD_Free">Free </s:String>
     <s:String x:Key="S_SysD_Unknown">Unknown: </s:String>
@@ -162,7 +166,7 @@
     <s:String x:Key="S_StSusp">Suspicious</s:String>
     <s:String x:Key="S_StSuspTip">Finished but quality looks doubtful (little text/odd chars) — worth reviewing</s:String>
     <s:String x:Key="S_StSkip">Skipped</s:String>
-    <s:String x:Key="S_LibTitle">RESULT LIBRARY</s:String>
+    <s:String x:Key="S_LibTitle">SEARCH</s:String>
     <s:String x:Key="S_LibTip">Full-text search across scanned .md files</s:String>
     <s:String x:Key="S_SearchTip">Keyword (min 2 chars), Enter to search</s:String>
     <s:String x:Key="S_SearchBtn">Search</s:String>

@@ -44,6 +44,8 @@ namespace MinerU25Tool
         private bool _detailLog = false;
         private bool _retry = true;
         private string _cpuThreads = "2";
+        private int _pageFrom = 0;
+        private int _pageTo = 0;
         private string _serverUrl = "";
         private readonly SemaphoreSlim _apiRestartLock = new SemaphoreSlim(1, 1);
         private int _apiRestarts = 0;
@@ -935,6 +937,8 @@ namespace MinerU25Tool
         private string _lang = "vi";
         private double _fontPct = 100;
         private double _opacityPct = 100;
+        private string _srcDir = "";
+        private string _outDir = "";
         private bool _topmost = false;
         private bool _sound = true;
         private string _accent = "#3B82F6;#22D3EE";
@@ -1058,7 +1062,19 @@ namespace MinerU25Tool
                         if (ps.Length == 2 && ps[0].Trim().Length > 0 && ps[1].Trim().Length > 0)
                             _accent = ps[0].Trim() + ";" + ps[1].Trim();
                     }
+                    else if (t.StartsWith("srcdir=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var v = t.Substring(7).Trim();
+                        if (v.Length > 0) _srcDir = v;
+                    }
+                    else if (t.StartsWith("outdir=", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var v = t.Substring(7).Trim();
+                        if (v.Length > 0) _outDir = v;
+                    }
                 }
+                try { if (srcBox != null && srcBox.Text.Trim().Length == 0 && _srcDir.Length > 0 && Directory.Exists(_srcDir)) srcBox.Text = _srcDir; } catch { }
+                try { if (outBox != null && outBox.Text.Trim().Length == 0 && _outDir.Length > 0) outBox.Text = _outDir; } catch { }
             }
             catch { }
         }
@@ -1068,6 +1084,8 @@ namespace MinerU25Tool
             try
             {
                 try { if (soundChk != null) _sound = soundChk.IsChecked != false; } catch { }
+                try { if (srcBox != null && srcBox.Text.Trim().Length > 0) _srcDir = srcBox.Text.Trim(); } catch { }
+                try { if (outBox != null && outBox.Text.Trim().Length > 0) _outDir = outBox.Text.Trim(); } catch { }
                 File.WriteAllLines(PrefsPath(), new[]
                 {
                     "theme=" + _theme, "lang=" + _lang,
@@ -1077,6 +1095,8 @@ namespace MinerU25Tool
                     "sound=" + (_sound ? "1" : "0"),
                     "autostart=" + (_autostart ? "1" : "0"),
                     "accent=" + _accent,
+                    "srcdir=" + _srcDir,
+                    "outdir=" + _outDir,
                 }, new UTF8Encoding(false));
             }
             catch { }
@@ -1231,6 +1251,15 @@ namespace MinerU25Tool
                 }
                 // Xoa nen cuc bo cu (magenta test truoc) de an theo DynamicResource
                 try { if (contentGrid != null) contentGrid.ClearValue(BackgroundProperty); } catch { }
+                // Khong de khe trong suot khi dang dac (click se xuyen xuong app khac)
+                try
+                {
+                    if (_opacityPct >= 100 && _baseColors.TryGetValue("Theme.AppBg", out Color bg0))
+                        this.Background = new SolidColorBrush(Color.FromArgb(255, bg0.R, bg0.G, bg0.B));
+                    else
+                        this.Background = Brushes.Transparent;
+                }
+                catch { }
             }
             catch { }
         }
@@ -1328,6 +1357,53 @@ namespace MinerU25Tool
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             try { this.Close(); } catch { }
+        }
+
+        private void Window_DragOver(object sender, DragEventArgs e)
+        {
+            try
+            {
+                e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+                e.Handled = true;
+            }
+            catch { }
+        }
+
+        private void Window_Drop(object sender, DragEventArgs e)
+        {
+            try
+            {
+                if (_running) return;
+                if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
+                var paths = (e.Data.GetData(DataFormats.FileDrop) as string[]) ?? new string[0];
+                string target = null;
+                int n = 0;
+                foreach (var p in paths)
+                {
+                    try
+                    {
+                        if (Directory.Exists(p))
+                        {
+                            if (target == null) target = p;
+                            try { foreach (var f in Directory.EnumerateFiles(p, "*.pdf", SearchOption.AllDirectories)) n++; } catch { }
+                        }
+                        else if (File.Exists(p) && p.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                        {
+                            n++;
+                            if (target == null) { try { target = Path.GetDirectoryName(p); } catch { } }
+                        }
+                    }
+                    catch { }
+                }
+                if (!string.IsNullOrEmpty(target) && srcBox != null)
+                {
+                    srcBox.Text = target;
+                    string msg = string.Format(L("S_DropFiles"), n);
+                    AppendLog("[DROP] " + msg + " Tu: " + target);
+                    try { ShowToast(msg); } catch { }
+                }
+            }
+            catch { }
         }
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -1587,6 +1663,17 @@ namespace MinerU25Tool
             bool crossCheck = crossCheckChk.IsChecked == true;
             _joinLines = joinLinesChk.IsChecked == true;
             _squeezeBlanks = squeezeBlanksChk.IsChecked == true;
+            // Khoang trang (1-based, 0 = khong gioi han)
+            _pageFrom = 0; _pageTo = 0;
+            try
+            {
+                if (pageFromBox != null && int.TryParse(pageFromBox.Text.Trim(), out int pf) && pf >= 1) _pageFrom = pf;
+                if (pageToBox != null && int.TryParse(pageToBox.Text.Trim(), out int pt) && pt >= 1) _pageTo = pt;
+                if (_pageFrom > 0 && _pageTo > 0 && _pageTo < _pageFrom) { int t = _pageFrom; _pageFrom = _pageTo; _pageTo = t; }
+                if (_pageFrom > 0 || _pageTo > 0)
+                    AppendLog("[TRANG] chi quet" + (_pageFrom > 0 ? " tu trang " + _pageFrom : "") + (_pageTo > 0 ? " den trang " + _pageTo : "") + " (MinerU 3.x).");
+            }
+            catch { _pageFrom = 0; _pageTo = 0; }
 
             // Liet ke file PDF
             List<FileInfo> files = new List<FileInfo>();
@@ -2087,6 +2174,12 @@ namespace MinerU25Tool
                 sb.Append(" -u \"").Append(url).Append("\"");
             if (!string.IsNullOrWhiteSpace(apiUrl))
                 sb.Append(" --api-url \"").Append(apiUrl).Append("\"");
+            // Gioi han trang (MinerU 3.x local/API, 0-based): bo qua neu khong dat
+            if (!backend.EndsWith("-http-client") && (_pageFrom > 0 || _pageTo > 0))
+            {
+                if (_pageFrom > 0) sb.Append(" -s ").Append(_pageFrom - 1);
+                if (_pageTo > 0) sb.Append(" -e ").Append(_pageTo - 1);
+            }
             return sb.ToString();
         }
 
@@ -2398,6 +2491,21 @@ namespace MinerU25Tool
                         }
                         catch (Exception ex) { AppendLog("ERR lam sach " + fi.Name + ": " + ex.Message); }
                     }
+
+                    // TXT: xuat them ban text thuan (strip markdown) canh file .md
+                    try
+                    {
+                        string stemT = Path.GetFileNameWithoutExtension(fi.Name);
+                        string txtDir = FindResultDir(ctx.outdir, outName, TruncateStemUtf8(stemT, MaxStemBytes));
+                        string txtMd = txtDir == null ? null : FirstMdIn(txtDir);
+                        if (!string.IsNullOrEmpty(txtMd) && File.Exists(txtMd))
+                        {
+                            string plain = StripMdToText(File.ReadAllText(txtMd, Encoding.UTF8));
+                            if (plain.Trim().Length > 0)
+                                File.WriteAllText(Path.Combine(Path.GetDirectoryName(txtMd) ?? txtDir, Path.GetFileNameWithoutExtension(txtMd) + ".txt"), plain, new UTF8Encoding(false));
+                        }
+                    }
+                    catch (Exception ex) { AppendLog("ERR xuat txt " + fi.Name + ": " + ex.Message); }
 
                     // PaddleOCR: xoa cac file PNG visualization o root save_path (khong de quy, giu nguyen imgs\)
                     if (be == "paddleocr")
@@ -2857,6 +2965,60 @@ namespace MinerU25Tool
                 AppendLog("[KTRA] loi kiem tra " + fi.Name + ": " + ex.Message);
                 return (null, 0);
             }
+        }
+
+        // =========================================================
+        //  Strip markdown -> text thuan (xuat .txt canh .md)
+        // =========================================================
+        private static string StripMdToText(string md)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(md)) return "";
+                string t = md.Replace("\r\n", "\n");
+                // Bo code fence giu noi dung
+                t = Regex.Replace(t, "```[a-zA-Z]*\n", "");
+                t = t.Replace("```", "");
+                var lines = t.Split('\n');
+                var sb = new StringBuilder();
+                foreach (var raw in lines)
+                {
+                    string ln = raw;
+                    // Bang: | -> khoang trang, bo dong ke ---/|---|
+                    string nospace = ln.Replace(" ", "");
+                    if (nospace.Length > 0 && nospace.Trim('|', '-', ':', '+').Length == 0) continue;
+                    ln = ln.Replace("|", " ");
+                    // Hinh anh ![a](u) -> a ; lien ket [t](u) -> t
+                    ln = Regex.Replace(ln, @"!\[([^\]]*)\]\([^)]*\)", "$1");
+                    ln = Regex.Replace(ln, @"\[([^\]]*)\]\([^)]*\)", "$1");
+                    // Tieu de, quote, list markers dau dong
+                    ln = Regex.Replace(ln, @"^\s{0,3}#{1,6}\s+", "");
+                    ln = Regex.Replace(ln, @"^\s*>\s?", "");
+                    ln = Regex.Replace(ln, @"^\s*([-*+]\s+|\d+[.)]\s+)", "");
+                    // Inline: `code`, **bold**, *it*, __, ~~
+                    ln = Regex.Replace(ln, @"`([^`]*)`", "$1");
+                    ln = ln.Replace("**", "").Replace("__", "");
+                    ln = Regex.Replace(ln, @"(^|\W)\*(\S[^*]*\S|\S)\*(\W|$)", "$1$2$3");
+                    ln = Regex.Replace(ln, @"(^|\W)_(\S[^_]*\S|\S)_(\W|$)", "$1$2$3");
+                    ln = ln.Replace("~~", "");
+                    // HTML tags
+                    ln = Regex.Replace(ln, @"<[^>]+>", "");
+                    // Footnote refs [^1]
+                    ln = Regex.Replace(ln, @"\[\^[^\]]*\]", "");
+                    // Gop khoang trang, bo dong trang (giu 1 dong)
+                    ln = Regex.Replace(ln, @"[ \t]{2,}", " ").TrimEnd();
+                    if (ln.Trim().Length == 0)
+                    {
+                        if (sb.Length > 0 && !sb.ToString(sb.Length - 1, 1).Equals("\n\n"))
+                            sb.Append("\n");
+                        continue;
+                    }
+                    sb.Append(ln.Trim()).Append("\n");
+                }
+                string out_ = Regex.Replace(sb.ToString(), @"\n{3,}", "\n\n").Trim() + "\n";
+                return out_;
+            }
+            catch { return md ?? ""; }
         }
 
         // =========================================================
