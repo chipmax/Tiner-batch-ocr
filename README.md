@@ -6,8 +6,8 @@ A Windows WPF (.NET 8) tool that batch-converts PDF files to Markdown with
 multiple OCR engines, unattended batch runs (resume, pause, auto-shutdown),
 Vietnamese/English UI and light/dark themes.
 
-![Config tab](docs/screenshots/01-config.png)
-![Progress tab](docs/screenshots/02-progress.png)
+![Config tab](docs/screenshots/en-01-config.png)
+![Dark mode](docs/screenshots/en-06-dark.png)
 
 ## Features
 
@@ -55,13 +55,11 @@ See [HUONG-DAN.txt](HUONG-DAN.txt) (Vietnamese) for detailed usage.
 
 ## Screenshots
 
-| Config | Progress | Search |
-|---|---|---|
-| ![Config](docs/screenshots/01-config.png) | ![Progress](docs/screenshots/02-progress.png) | ![Search](docs/screenshots/03-search.png) |
+| Config | Dark mode |
+|---|---|
+| ![Config](docs/screenshots/en-01-config.png) | ![Dark](docs/screenshots/en-06-dark.png) |
 
-| System | Settings | Dark mode |
-|---|---|---|
-| ![System](docs/screenshots/04-system.png) | ![Settings](docs/screenshots/05-settings.png) | ![Dark](docs/screenshots/06-dark.png) |
+More screenshots (Vietnamese UI) in [README.vi.md](README.vi.md).
 
 ## License
 

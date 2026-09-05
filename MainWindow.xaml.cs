@@ -1139,6 +1139,12 @@ namespace MinerU25Tool
                     langBtn.Content = _lang == "en" ? "🌐 EN" : "🌐 VI";
                     try { langBtn.ToolTip = L("S_LangTip"); } catch { }
                 }
+                try
+                {
+                    if (themeBtn != null)
+                        themeBtn.Content = _theme == "dark" ? "🌙 " + L("S_ThemeNameDark") : "☀ " + L("S_ThemeNameLight");
+                }
+                catch { }
                 try { RefreshPillText(); } catch { }
                 try { SyncEffortState(); } catch { }
                 if (save) SaveUiPrefs();
