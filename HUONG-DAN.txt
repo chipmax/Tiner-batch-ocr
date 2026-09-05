@@ -26,7 +26,7 @@ MinerU 2.5 (chuyển PDF thành Markdown + ảnh + JSON).
   + vlm-engine    — chỉ VLM, không dùng API thường trú được
   + pipeline      — OCR truyền thống (PP-OCRv6), tốt cho file scan
   + vlm-http-client / hybrid-http-client — chạy VLM trên server GPU
-    từ xa (xem file HUONG-DAN-GPU-TU-XA.md)
+    từ xa (xem file docs\HUONG-DAN-GPU-TU-XA.md trên GitHub)
   + paddleocr     — PaddleOCR PP-StructureV3 (engine thứ 2): OCR scan
     nhanh, VRAM ~1-2GB, chạy tuần tự từng file. Cần cài paddleocr vào
     venv "paddle-env" đặt cạnh tool (hoặc tạo paddle-path.txt trỏ tới
@@ -37,7 +37,6 @@ MinerU 2.5 (chuyển PDF thành Markdown + ảnh + JSON).
     "mineru4x-venv" đặt cạnh tool (hoặc tạo mineru4x-path.txt trỏ tới
     mineru-kit.exe); model local được tái dùng tự động. Lưu ý: không có
     effort high, không hiển thị tiến độ theo trang (ETA theo file).
-    Chi tiết so sánh: xem file SOSANH-MINERU4-vs-345.md.
 - Effort (chỉ với hybrid):
   + medium — mặc định, nhanh hơn nhiều, chất lượng gần bằng high
   + high   — chất lượng cao nhất, chậm hơn
@@ -145,7 +144,7 @@ PaddleOCR (venv paddle-env), MinerU 4.x (venv mineru4x-venv), đĩa trống.
 -------------------------------
 GPU yếu (vd T400 4GB) là nút thắt lớn nhất. Có thể chạy phần VLM
 trên GPU mạnh thuê ngoài (RunPod, Vast.ai, Colab...) — nhanh hơn
-10-40 lần. Xem hướng dẫn chi tiết:  HUONG-DAN-GPU-TU-XA.md
+10-40 lần. Xem hướng dẫn chi tiết:  docs\HUONG-DAN-GPU-TU-XA.md (trên GitHub)
 
 9. TÍNH NĂNG MỚI (smart routing / chéo kiểm / watch / thư viện)
 ---------------------------------------------------------------

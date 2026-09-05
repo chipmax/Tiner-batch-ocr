@@ -184,7 +184,7 @@
     <s:String x:Key="S_HintPaddle">PaddleOCR: sequential per file, ignores API mode / parallelism. 2-4 CPU threads recommended. First run downloads models.</s:String>
     <s:String x:Key="S_HintMineru4x">MinerU 4.x basic (~medium): always uses resident server (tier basic), ~2.6GB VRAM, per-file ETA (no per-page progress).</s:String>
     <s:String x:Key="S_HintWinOcr">Windows OCR (WinRT): free, CPU, no setup. Good for text/light scans; complex tables worse than MinerU/Paddle.</s:String>
-    <s:String x:Key="S_HintHttp">Needs a remote OpenAI-compatible server — see HUONG-DAN-GPU-TU-XA.md.</s:String>
+    <s:String x:Key="S_HintHttp">Needs a remote OpenAI-compatible server (see README on GitHub).</s:String>
     <s:String x:Key="S_HintPipeline">Traditional PP-OCR — no effort.</s:String>
     <s:String x:Key="S_HintSmart">Smart routing ON: engine auto-selected per file (text → fast, scan → OCR). The Engine choice above is ignored.</s:String>
     <s:String x:Key="S_PillReady">READY</s:String>

@@ -183,7 +183,7 @@
     <s:String x:Key="S_HintPaddle">PaddleOCR: chạy tuần tự từng file, không dùng API mode / song song. Khuyến nghị CPU 2-4 luồng. Lần đầu chạy sẽ tải model.</s:String>
     <s:String x:Key="S_HintMineru4x">MinerU 4.x basic (~medium): luôn dùng server thường trú (tier basic), VRAM ~2.6GB, ETA theo file (không có progress theo trang).</s:String>
     <s:String x:Key="S_HintWinOcr">Windows OCR (WinRT): miễn phí, chạy CPU, không cần cài đặt thêm. Phù hợp file text/scan nhẹ; bảng biểu phức tạp kém hơn MinerU/Paddle.</s:String>
-    <s:String x:Key="S_HintHttp">Cần server OpenAI-compatible từ xa — xem HUONG-DAN-GPU-TU-XA.md.</s:String>
+    <s:String x:Key="S_HintHttp">Cần server OpenAI-compatible từ xa (xem README trên GitHub).</s:String>
     <s:String x:Key="S_HintPipeline">OCR truyền thống PP-OCR — không có effort.</s:String>
     <s:String x:Key="S_HintSmart">Smart routing BẬT: tự động chọn engine theo file (text → nhanh, scan → OCR). Lựa chọn Engine ở trên tạm không có tác dụng.</s:String>
     <s:String x:Key="S_PillReady">SẴN SÀNG</s:String>

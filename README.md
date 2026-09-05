@@ -51,9 +51,7 @@ See [HUONG-DAN.txt](HUONG-DAN.txt) (Vietnamese) for detailed usage.
 ## Docs
 
 - `HUONG-DAN.txt` — usage guide (Vietnamese).
-- `HUONG-DAN-GPU-TU-XA.md` — run VLM on a rented remote GPU.
-- `SOSANH-MINERU4-vs-345.md` — MinerU 4.x vs 3.4.5 comparison.
-- `HUONG-DAN-DE-XUAT-OCR-ENGINES.md` — other OCR engines surveyed.
+- `docs/HUONG-DAN-GPU-TU-XA.md` — run VLM on a rented remote GPU.
 
 ## Screenshots
 
