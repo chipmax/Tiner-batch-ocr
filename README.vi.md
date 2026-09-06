@@ -13,7 +13,8 @@ Sáng/Tối.
 
 - **Engines**: `hybrid-engine` (khuyên dùng), `vlm-engine`, `pipeline` (PP-OCR),
   `vlm-http-client` / `hybrid-http-client` (server GPU từ xa),
-  `paddleocr` (PP-StructureV3, VRAM nhẹ), `mineru4x` (MinerU 4.x server thường trú),
+   `paddleocr` (PP-StructureV3, VRAM nhẹ, gộp 1 `.md` mỗi file qua
+   `paddle_run.py`, tắt module seal/formula/chart), `mineru4x` (MinerU 4.x server thường trú),
   `windows-ocr` (OCR có sẵn của Windows, miễn phí, CPU).
 - **Batch**: song song 1–3 file qua `mineru-api` thường trú, resume (marker `.done`),
   chạy lại khi lỗi (tuỳ chọn nâng effort), timeout mỗi file, **tạm dừng/tiếp tục**,

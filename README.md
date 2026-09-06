@@ -13,7 +13,8 @@ Vietnamese/English UI and light/dark themes.
 
 - **OCR engines**: `hybrid-engine` (recommended), `vlm-engine`, `pipeline` (PP-OCR),
   `vlm-http-client` / `hybrid-http-client` (remote GPU server),
-  `paddleocr` (PP-StructureV3, light VRAM), `mineru4x` (MinerU 4.x resident server),
+   `paddleocr` (PP-StructureV3, light VRAM, merged single `.md` per file via
+   `paddle_run.py` with seal/formula/chart modules off), `mineru4x` (MinerU 4.x resident server),
   `windows-ocr` (built-in WinRT OCR, free, CPU).
 - **Batch**: 1–3 files in parallel via resident `mineru-api`, resume (`.done` markers),
   retry-on-failure (optional effort boost), per-file timeout, **pause/resume**,

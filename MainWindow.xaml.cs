@@ -364,6 +364,34 @@ namespace MinerU25Tool
         }
 
         // =========================================================
+        //  Tim paddle_run.py (wrapper chi luu markdown gop). Tim theo thu tu:
+        //  canh exe tool -> duyet nguoc tu thu muc exe (cho chay debug)
+        // =========================================================
+        private string ResolvePaddleWrapper()
+        {
+            try
+            {
+                string w = Path.Combine(AppContext.BaseDirectory, "paddle_run.py");
+                if (File.Exists(w)) return w;
+            }
+            catch { }
+            try
+            {
+                var dir = new DirectoryInfo(AppContext.BaseDirectory);
+                for (int i = 0; i < 5 && dir != null; i++)
+                {
+                    string cand = Path.Combine(dir.FullName, "paddle_run.py");
+                    if (File.Exists(cand)) return cand;
+                    cand = Path.Combine(dir.FullName, "mineru-tool", "paddle_run.py");
+                    if (File.Exists(cand)) return cand;
+                    dir = dir.Parent;
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        // =========================================================
         //  Tim mineru-kit.exe cua MinerU 4.x (venv rieng, thu tu uu tien)
         // =========================================================
         private string ResolveMinerU4Kit()
@@ -2144,6 +2172,21 @@ namespace MinerU25Tool
             // --- PaddleOCR: chay qua paddlex.exe (PP-StructureV3) ---
             if (backend == "paddleocr")
             {
+                // Uu tien wrapper paddle_run.py (chi luu markdown gop,
+                // tat seal/formula/chart): 1 PDF -> 1 .md + imgs/, khong
+                // docx/tex/json/PNG nhu CLI mac dinh.
+                try
+                {
+                    string wrap = ResolvePaddleWrapper();
+                    string pExe = null;
+                    try { pExe = ResolvePaddleExe(); } catch { }
+                    string py = pExe == null ? null : PythonForExe(pExe);
+                    if (wrap != null && py != null && File.Exists(py))
+                        return "\"" + wrap + "\" --input \"" + file
+                            + "\" --save_path \"" + Path.Combine(outdir, outName)
+                            + "\" --device gpu";
+                }
+                catch { }
                 sb.Append(" --pipeline PP-StructureV3");
                 sb.Append(" --input \"").Append(file).Append("\"");
                 sb.Append(" --save_path \"").Append(Path.Combine(outdir, outName)).Append("\"");
@@ -2151,6 +2194,8 @@ namespace MinerU25Tool
                 sb.Append(" --use_doc_orientation_classify False");
                 sb.Append(" --use_doc_unwarping False");
                 sb.Append(" --use_textline_orientation False");
+                sb.Append(" --use_seal_recognition False");
+                sb.Append(" --use_formula_recognition False");
                 return sb.ToString();
             }
 
@@ -3155,7 +3200,19 @@ namespace MinerU25Tool
         // exePath theo backend (smart routing / cheo kiem)
         private string ExeForBackend(BatchCtx ctx, string be)
         {
-            if (be == "paddleocr" && !string.IsNullOrEmpty(ctx.paddleExe)) return ctx.paddleExe;
+            if (be == "paddleocr" && !string.IsNullOrEmpty(ctx.paddleExe))
+            {
+                // Wrapper paddle_run.py (neu co): chay bang python cua venv
+                // paddle thay vi paddlex.exe de chi luu markdown gop.
+                try
+                {
+                    string wrap = ResolvePaddleWrapper();
+                    string py = PythonForExe(ctx.paddleExe);
+                    if (wrap != null && py != null && File.Exists(py)) return py;
+                }
+                catch { }
+                return ctx.paddleExe;
+            }
             if (be == "mineru4x" && !string.IsNullOrEmpty(ctx.kitExe)) return ctx.kitExe;
             if (!string.IsNullOrEmpty(ctx.exePath)) return ctx.exePath;
             try { if (!string.IsNullOrEmpty(_mineruPath) && File.Exists(_mineruPath)) return _mineruPath; } catch { }

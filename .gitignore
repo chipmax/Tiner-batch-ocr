@@ -25,6 +25,7 @@ mineru4x-venv/
 models/
 downloads/
 mineru25-out/
+blobs/
 *.pdf
 *.md.checkpoint
 
