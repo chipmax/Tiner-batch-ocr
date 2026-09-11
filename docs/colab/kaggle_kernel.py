@@ -36,18 +36,18 @@ for f in PDFS:
 
 print("== tai model ==")
 from huggingface_hub import snapshot_download
-snapshot_download("baidu/Unlimited-OCR", local_dir=WORK + "/Unlimited-OCR")
-snapshot_download("rednote-hilab/dots.mocr", local_dir=WORK + "/DotsMOCR")
+snapshot_download("baidu/Unlimited-OCR", local_dir="/tmp/models/Unlimited-OCR")
+snapshot_download("rednote-hilab/dots.mocr", local_dir="/tmp/models/DotsMOCR")
 
 print("== Unlimited-OCR ==")
 import fitz
 import torch
 from transformers import AutoModel, AutoTokenizer
 
-tok = AutoTokenizer.from_pretrained(WORK + "/Unlimited-OCR",
+tok = AutoTokenizer.from_pretrained("/tmp/models/Unlimited-OCR",
                                     trust_remote_code=True)
 model = AutoModel.from_pretrained(
-    WORK + "/Unlimited-OCR", trust_remote_code=True,
+    "/tmp/models/Unlimited-OCR", trust_remote_code=True,
     use_safetensors=True, torch_dtype=torch.bfloat16).eval().cuda()
 
 
