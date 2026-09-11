@@ -5,6 +5,10 @@ import subprocess
 import sys
 import time
 
+# An GPU P100 (cap 6.0): torch khong co kernel -> an han bang cach giau GPU.
+# Model chay CPU float32 (cham nhung dung de doi chung chat luong).
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 RAW = ("https://raw.githubusercontent.com/chipmax/Tiner-batch-ocr"
        "/master/docs/colab/")
 PDFS = ["samples-codeline-4pp.pdf", "samples-esh-3pp.pdf",
@@ -46,22 +50,13 @@ from transformers import AutoModel, AutoTokenizer
 
 tok = AutoTokenizer.from_pretrained("/tmp/models/Unlimited-OCR",
                                     trust_remote_code=True)
-cap = torch.cuda.get_device_capability(0) \
-    if torch.cuda.is_available() else (0, 0)
-print(f"GPU cap: {cap}", flush=True)
-if cap >= (7, 0):
-    model = AutoModel.from_pretrained(
-        "/tmp/models/Unlimited-OCR", trust_remote_code=True,
-        use_safetensors=True, torch_dtype=torch.bfloat16).eval().cuda()
-    DEVICE = "cuda"
-    print("dung GPU", flush=True)
-else:
-    print(f"GPU yeu/khong tuong thich (cap {cap}), fallback CPU",
-          flush=True)
-    model = AutoModel.from_pretrained(
-        "/tmp/models/Unlimited-OCR", trust_remote_code=True,
-        use_safetensors=True, torch_dtype=torch.float32).eval().cpu()
-    DEVICE = "cpu"
+tok = AutoTokenizer.from_pretrained("/tmp/models/Unlimited-OCR",
+                                    trust_remote_code=True)
+model = AutoModel.from_pretrained(
+    "/tmp/models/Unlimited-OCR", trust_remote_code=True,
+    use_safetensors=True, torch_dtype=torch.float32).eval().cpu()
+DEVICE = "cpu"
+print("chay CPU (da an GPU P100)", flush=True)
 
 
 def pdf_to_images(pdf, dpi=150):
