@@ -6,7 +6,7 @@ import sys
 import time
 
 RAW = ("https://raw.githubusercontent.com/chipmax/Tiner-batch-ocr"
-       "/master/mineru-tool/docs/colab/")
+       "/master/docs/colab/")
 PDFS = ["samples-codeline-4pp.pdf", "samples-esh-3pp.pdf",
         "samples-kubota-scan.pdf"]
 WORK = "/kaggle/working"
