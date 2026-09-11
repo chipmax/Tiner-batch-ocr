@@ -46,9 +46,21 @@ from transformers import AutoModel, AutoTokenizer
 
 tok = AutoTokenizer.from_pretrained("/tmp/models/Unlimited-OCR",
                                     trust_remote_code=True)
-model = AutoModel.from_pretrained(
-    "/tmp/models/Unlimited-OCR", trust_remote_code=True,
-    use_safetensors=True, torch_dtype=torch.bfloat16).eval().cuda()
+try:
+    model = AutoModel.from_pretrained(
+        "/tmp/models/Unlimited-OCR", trust_remote_code=True,
+        use_safetensors=True, torch_dtype=torch.bfloat16).eval().cuda()
+    model.generate  # chamCUDA som de bat loi kernel (P100)
+    import torch as _t
+    _t.zeros(1).cuda()
+    DEVICE = "cuda"
+    print("dung GPU", flush=True)
+except Exception as ex:
+    print(f"GPU loi ({str(ex)[:120]}), fallback CPU", flush=True)
+    model = AutoModel.from_pretrained(
+        "/tmp/models/Unlimited-OCR", trust_remote_code=True,
+        use_safetensors=True, torch_dtype=torch.float32).eval().cpu()
+    DEVICE = "cpu"
 
 
 def pdf_to_images(pdf, dpi=150):
@@ -81,11 +93,17 @@ torch.cuda.empty_cache()
 print("== dots.mocr (transformers, patch flash-attn cho T4) ==")
 sh("grep -rl flash_attention_2 /tmp/dotsmocr --include=*.py | "
    "xargs sed -i 's/flash_attention_2/eager/g' || true")
+import copy as _copy
+_no_gpu = dict(os.environ)
+_no_gpu["CUDA_VISIBLE_DEVICES"] = ""  # ep dots chay CPU, tranh loi kernel P100
 for f in PDFS:
     t = time.time()
-    sh(f"cd /tmp/dotsmocr && python3 dots_mocr/parser.py {WORK}/pdfs/{f} "
-       f"--prompt prompt_ocr --use_hf true")
-    print(f, "XONG", round(time.time() - t), "s", flush=True)
+    r = subprocess.run(
+        ["python3", "dots_mocr/parser.py", f"{WORK}/pdfs/{f}",
+         "--prompt", "prompt_ocr", "--use_hf", "true"],
+        cwd="/tmp/dotsmocr", env=_no_gpu)
+    print(f, "XONG", round(time.time() - t), "s exit", r.returncode,
+          flush=True)
 
 print("== so sanh ==")
 import glob
