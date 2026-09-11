@@ -46,17 +46,18 @@ from transformers import AutoModel, AutoTokenizer
 
 tok = AutoTokenizer.from_pretrained("/tmp/models/Unlimited-OCR",
                                     trust_remote_code=True)
-try:
+cap = torch.cuda.get_device_capability(0) \
+    if torch.cuda.is_available() else (0, 0)
+print(f"GPU cap: {cap}", flush=True)
+if cap >= (7, 0):
     model = AutoModel.from_pretrained(
         "/tmp/models/Unlimited-OCR", trust_remote_code=True,
         use_safetensors=True, torch_dtype=torch.bfloat16).eval().cuda()
-    model.generate  # chamCUDA som de bat loi kernel (P100)
-    import torch as _t
-    _t.zeros(1).cuda()
     DEVICE = "cuda"
     print("dung GPU", flush=True)
-except Exception as ex:
-    print(f"GPU loi ({str(ex)[:120]}), fallback CPU", flush=True)
+else:
+    print(f"GPU yeu/khong tuong thich (cap {cap}), fallback CPU",
+          flush=True)
     model = AutoModel.from_pretrained(
         "/tmp/models/Unlimited-OCR", trust_remote_code=True,
         use_safetensors=True, torch_dtype=torch.float32).eval().cpu()
