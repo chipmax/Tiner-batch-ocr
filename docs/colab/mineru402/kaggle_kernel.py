@@ -26,6 +26,9 @@ print("== tai PDF ==")
 os.makedirs(WORK + "/pdfs", exist_ok=True)
 for f in PDFS:
     sh(f"curl -sL -o {WORK}/pdfs/{f} {RAW}{f}")
+print("== start server nen ==")
+sh("nohup mineru server start > /tmp/mineru-server.log 2>&1 &")
+sh("sleep 20; curl -s http://127.0.0.1:8000/health || curl -s http://127.0.0.1:8000/docs | head -c 200 || true")
 print("== parse tung file ==")
 os.makedirs(WORK + "/out_mineru402", exist_ok=True)
 for f in PDFS:
