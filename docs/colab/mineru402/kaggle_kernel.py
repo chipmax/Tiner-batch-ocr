@@ -21,6 +21,7 @@ print("== GPU ==")
 sh("nvidia-smi --query-gpu=name,memory.total --format=csv")
 print("== cai mineru 4.0.2 ==")
 sh("pip install -q mineru==4.0.2")
+sh("pip install -q -U transformers")
 sh("mineru-kit models show || true")
 print("== tai PDF ==")
 os.makedirs(WORK + "/pdfs", exist_ok=True)
@@ -40,12 +41,12 @@ for f in PDFS:
 print("== thu api-server + tier standard ==")
 sh("nohup mineru-kit api-server --host 127.0.0.1 --port 8001 --tier standard > /tmp/api-server.log 2>&1 &")
 sh("sleep 60; tail -c 2000 /tmp/api-server.log || true")
-print("== parse tung file ==")
+print("== parse stateless (mineru-kit parse --tier standard) ==")
 os.makedirs(WORK + "/out_mineru402", exist_ok=True)
 for f in PDFS:
     t = time.time()
-    sh(f"cd {WORK} && mineru parse {WORK}/pdfs/{f} --pages all "
-       f"-o {WORK}/out_mineru402/{f}.md")
+    sh(f"cd {WORK} && mineru-kit parse {WORK}/pdfs/{f} "
+       f"-o {WORK}/out_mineru402/{f}.md --tier standard")
     print(f, "XONG", round(time.time() - t), "s", flush=True)
 print("== so sanh ==")
 import glob
