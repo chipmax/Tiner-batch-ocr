@@ -29,6 +29,17 @@ for f in PDFS:
 print("== start server nen ==")
 sh("nohup mineru server start > /tmp/mineru-server.log 2>&1 &")
 sh("sleep 20; curl -s http://127.0.0.1:8000/health || curl -s http://127.0.0.1:8000/docs | head -c 200 || true")
+sh("mineru-kit models verify || true")
+print("== parse FLASH (text preview, khong can engine nang) ==")
+os.makedirs(WORK + "/out_flash", exist_ok=True)
+for f in PDFS:
+    t = time.time()
+    sh(f"cd {WORK} && mineru parse {WORK}/pdfs/{f} --pages all --tier flash "
+       f"-o {WORK}/out_flash/{f}.md")
+    print(f, "FLASH XONG", round(time.time() - t), "s", flush=True)
+print("== thu api-server + tier standard ==")
+sh("nohup mineru-kit api-server --host 127.0.0.1 --port 8001 --tier standard > /tmp/api-server.log 2>&1 &")
+sh("sleep 60; tail -c 2000 /tmp/api-server.log || true")
 print("== parse tung file ==")
 os.makedirs(WORK + "/out_mineru402", exist_ok=True)
 for f in PDFS:
