@@ -26,6 +26,11 @@ Sáng/Tối.
 - **Tìm kiếm**: tìm toàn văn trong mọi file `.md` đã quét.
 - **Hệ thống**: bảng kiểm tra từng thành phần (đỏ = bắt buộc, vàng = tuỳ chọn),
   **cài toàn bộ hoặc từng mục** bằng pip/venv tự động.
+- **Trang trại GPU từ xa**: đẩy cả thư viện lên GPU **Colab / Kaggle** qua
+  [`remote/`](remote/README.md) — máy local chỉ phục vụ PDF qua Cloudflare
+  Tunnel, worker quét bằng MinerU 4.2.3 / PaddleOCR-VL / dots.ocr rồi trả
+  markdown về. Không upload 25 GB lên cloud, không cần tài khoản mới, có thể
+  resume qua nhiều phiên.
 - **Giao diện**: 5 tabs (Cấu hình, Tiến độ, Tìm kiếm, Hệ thống, Cài đặt),
   cỡ chữ 80–150%, nền xuyên thấu, luôn trên cùng, trợ giúp F1, chạy CLI
   (`--autostart --src --out --engine`).
@@ -47,6 +52,26 @@ dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=
 Mở `MinerU25Tool.exe`, vào tab **Hệ thống** → **Kiểm tra** → **Cài đặt tự động**
 (nếu thiếu), chọn thư mục PDF rồi bấm **BẮT ĐẦU**.
 Xem [HUONG-DAN.txt](HUONG-DAN.txt) để biết chi tiết.
+
+## GPU từ xa (Colab / Kaggle)
+
+Với thư viện quá lớn so với GPU local (ví dụ 2.000+ PDF / 25 GB), chạy cả lô
+trên GPU T4 miễn phí:
+
+```powershell
+cd remote
+python coordinator.py plan  --src "F:\books" --out "F:\books-ocr"
+python coordinator.py serve --src "F:\books" --out "F:\books-ocr" --tunnel
+# dán URL + TOKEN in ra vào docs/colab/Tiner_Remote_Colab.ipynb
+# (hoặc kernel Kaggle trong docs/colab/remote_worker/), rồi Run All
+python coordinator.py status
+python coordinator.py merge --out "F:\books-ocr"
+```
+
+Máy local giữ PDF và hàng đợi SQLite nhỏ; worker tải từng khúc trang qua
+Cloudflare Tunnel, quét trên GPU rồi gửi `main.md` + assets về. Chạy được nhiều
+phiên Colab/Kaggle cùng lúc; mỗi job chỉ một worker nhận, thử lại tối đa 3 lần.
+Xem [`remote/README.md`](remote/README.md).
 
 ## Ảnh giao diện
 
