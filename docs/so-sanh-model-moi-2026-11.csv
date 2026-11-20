@@ -1,0 +1,11 @@
+model,ngày_tạo,ngày_cập_nhật,loại,tham_số,dung_lượng,giấy_phép,benchmark_chính,điểm_vi,t4,kết_luận
+baidu/Unlimited-OCR-2,2026-10-26,2026-11-16,OCR đa trang,"~3B (MoE)",6.4GB,MIT,"SOTA MPDocBench/MarathonDocBench (tự công bố)","chưa có (v1: 54.1)","được, cửa sổ trang nhỏ","đáng thử, chưa kiểm chứng tiếng Việt"
+moganai/MoganOCR-TR-1.5,2026-11-18,2026-11-18,OCR 1 trang (Thổ),2B,4.2GB,Apache-2.0,"TurkishOCR-Bench 91.9; TEDS 86.9","không (Turkish)","tốt","không dùng cho tiếng Việt"
+orcarouter/OrcaCyber-Nano-1.0,2026-10-16,2026-11-11,VLM an ninh/RE,"~27B (Qwen3.8)","2-15GB GGUF",Other,"không có benchmark OCR","không","GGUF","không phải OCR"
+microsoft/Mage-VL-Cowork,2026-10-30,2026-10-30,Computer-use agent,4B,9.5GB,Apache-2.0,"OSWorld-Verified 66.0","không","được","không phải OCR"
+datalab-to/chandra-ocr-2,2026-03-16,2026-06-26,VLM,5B,10.1GB,OpenRAIL-M,"MDPBench 79.7 / VI 85.6",85.6,"chật, nên 4-bit","VI cao nhất, license hạn chế"
+allenai/olmOCR-2-7B,2025-10-06,2026-11-16,VLM,7B,15.8GB,Apache-2.0,"MDPBench 70.4 / VI 84.0",84.0,"cần 4-bit/FP8","chất lượng cao, 7B"
+zenosai/MonkeyOCRv2-B-Parsing,2026-07-11,2026-09-08,VLM parser,0.88B,1.6GB,Apache-2.0,"MDPBench 83.3 / VI 83.2",83.2,"rất tốt","tốt nhất nhóm nhỏ"
+VietAlphaLabs/SenOCR-Vi,2026-09-03,2026-09-03,VLM fine-tune,0.96B,3.7GB,Apache-2.0,"eval riêng 82.83",82.83,"rất tốt","chuyên chữ Việt, yếu bảng/công thức"
+PaddlePaddle/PaddleOCR-VL-1.6,2026-05-27,2026-11-06,VLM+pipeline,0.9B,1.8GB,Apache-2.0,"OmniDoc 96.34 / VI 79.3",79.3,"rất tốt","bảng/công thức tốt nhất"
+opendatalab/MinerU2.5-Pro,2026-05-20,2026-10-08,"VLM (MinerU 4.2.3)",1.2B,2.2GB,Apache-2.0 + điều khoản,"OmniDoc 95.75 / VI 74.2",74.2,"rất tốt","baseline tích hợp sẵn"

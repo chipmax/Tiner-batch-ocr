@@ -27,9 +27,13 @@ trên GPU remote Colab/Kaggle T4.
 | **5 (chất lượng cao, license hạn chế)** | **Chandra 2** | 5B, **VI 85,6** — cao nhất mã nguồn mở, nhưng model OpenRAIL-M hạn chế thương mại |
 | **6** | **olmOCR 2 (7B)** | Apache-2.0, **VI 84,0** — tốt nhưng 7B, T4 phải dùng 4-bit/FP8 |
 
-**Tránh cho tiếng Việt scan**: Unlimited-OCR và DeepSeek-OCR (OmniDocBench rất
-cao nhưng MDPBench VI chỉ ~54), PP-StructureV3 / MinerU-pipeline cho bản scan
-(Việt 52,7 / 27,6).
+**Tránh cho tiếng Việt scan**: Unlimited-OCR **bản 1** và DeepSeek-OCR
+(OmniDocBench rất cao nhưng MDPBench VI chỉ ~54), PP-StructureV3 /
+MinerU-pipeline cho bản scan (Việt 52,7 / 27,6).
+
+**4 model mới bạn gửi:** chỉ `Unlimited-OCR-2` là OCR (đáng thử nhưng chưa có
+điểm tiếng Việt); `MoganOCR-TR-1.5` chỉ tiếng Thổ; `OrcaCyber-Nano-1.0` và
+`Mage-VL-Cowork` **không phải OCR** — xem mục 8.
 
 ---
 
@@ -303,13 +307,91 @@ Worker hiện có: `mineru4`, `paddle`, `paddle_structure`, `dots`, `unlimited`,
 | `senocr` | `pip install "transformers>=5.0" paddleocr[doc-parser]` | Thay model nhận dạng trong pipeline PaddleOCR-VL bằng `VietAlphaLabs/SenOCR-Vi` |
 | `chandra` | `pip install chandra-ocr` (hoặc GGUF 4-bit) | `chandra_vllm` + `chandra-ocr` |
 | `olmocr` | `pip install olmocr` + vLLM | `olmocr <workspace> --markdown --pdfs ...` |
+| `unlimited2` | `pip install torch==2.13 transformers==4.52.1` hoặc SGLang | `model.infer_multi(...)` (SR-SWA, đa trang) |
+| `mogan` | `pip install transformers` + `moganai/MoganOCR-TR-1.5` | 1 trang → markdown (chỉ tiếng Thổ) |
 
 Sau khi thêm, chạy cùng một coordinator với `--engine monkeyocr` cho lô thử để
 so sánh trực tiếp.
 
 ---
 
-## 8. Nguồn
+## 8. Bốn model bạn gửi + các model mới (11/2026)
+
+Bảng máy đọc: [`so-sanh-model-moi-2026-11.csv`](so-sanh-model-moi-2026-11.csv).
+
+Trong 4 link bạn gửi, **chỉ 1 cái là OCR/document parsing**. Ba cái còn lại
+thuộc loại khác, không nên đưa vào lô sách:
+
+| Model | Ngày | Loại thực tế | Tham số | Dung lượng | License | Benchmark | Kết luận cho `F:\books` |
+|---|---|---|---:|---|---:|---|---|
+| **baidu/Unlimited-OCR-2** | 16/11/2026 | OCR đa trang, tài liệu siêu dài | ~3B (MoE) | 6,4 GB | MIT | Tự công bố SOTA trên MPDocBench / MarathonDocBench; **chưa có MDPBench VI** | **Đáng thử**, nhưng bản 1 chỉ đạt 54,1 VI |
+| **moganai/MoganOCR-TR-1.5** | 18/11/2026 | OCR 1 trang, **tiếng Thổ** | 2B | 4,2 GB | Apache-2.0 | TurkishOCR-Bench 91,9; TEDS 86,9 | **Không dùng** (chỉ tiếng Thổ) |
+| **orcarouter/OrcaCyber-Nano-1.0** | 11/11/2026 | VLM an ninh mạng / reverse-engineering | ~27B (Qwen3.8) | 2–15 GB GGUF | Other | Không có benchmark OCR | **Không phải OCR** |
+| **microsoft/Mage-VL-Cowork** | 30/10/2026 | Computer-use agent (GUI + terminal) | 4B | 9,5 GB | Apache-2.0 | OSWorld-Verified 66,0 | **Không phải OCR** |
+
+### 8.1 Unlimited-OCR-2 — ứng viên duy nhất trong 4 link
+
+- **Mới**: 16/11/2026, MIT, 604k lượt tải, 714 like — đang rất hot.
+- **Kiến trúc**: MoE ~3B, SR-SWA (Sparse Reference Sliding Window Attention)
+  giúp xử lý **hàng trăm trang trong một request** mà bộ nhớ gần như không
+  tăng; 1 trang chỉ ~273 token ảnh.
+- **Mạnh**: tài liệu dài, nhiều trang liên tục (MPDocBench, MarathonDocBench).
+  Đây là điểm mà MinerU/PaddleOCR thường phải chia trang.
+- **Rủi ro**: chưa có điểm MDPBench tiếng Việt; **bản Unlimited-OCR 1 chỉ đạt
+  54,1 VI** trên MDPBench dù OmniDocBench 94,0. Chưa có bằng chứng bản 2 khắc
+  phục được lỗi tiếng Việt/scan. Test trên 30–50 trang thật trước khi tin.
+- **T4**: weights 6,4 GB + KV; chạy được nhưng README khuyến nghị SGLang và
+  test trên A800-80GB. Trên T4 nên dùng Transformers `infer_multi` với cửa sổ
+  trang nhỏ (10 trang) hoặc SGLang nếu build được.
+
+### 8.2 MoganOCR-TR-1.5 — tốt nhưng chỉ tiếng Thổ
+
+- 2B, Apache-2.0, mới nhất trong 4 link (18/11/2026), 1 trang → markdown,
+  bảng HTML, công thức LaTeX; TurkishOCR-Bench **91,9**, TEDS **86,9**.
+- **Không có tiếng Việt**: model card và benchmark chỉ tiếng Thổ. Chỉ dùng nếu
+  sau này có tài liệu Thổ.
+
+### 8.3 OrcaCyber-Nano-1.0 — không phải OCR
+
+- Base Qwen3.8-27B, GGUF, license "other", định hướng **cybersecurity /
+  reverse-engineering / reasoning**. Không có benchmark tài liệu, không có
+  tiếng Việt. Không dùng cho OCR.
+
+### 8.4 Mage-VL-Cowork — không phải OCR
+
+- 4B, Apache-2.0, là **computer-use agent** (điều khiển GUI + terminal),
+  benchmark OSWorld/ScreenSpot. Có thể đọc screenshot nhưng không phải model
+  parse tài liệu. Không dùng cho OCR.
+
+### 8.5 Xếp hạng "mới và tốt" theo mục đích
+
+| Mục đích | Tốt nhất hiện có | Dự phòng | Ghi chú |
+|---|---|---|---|
+| Scan tiếng Việt — chất lượng tối đa | **Chandra 2** (VI 85,6) | **olmOCR 2** (VI 84,0) | Chandra OpenRAIL-M; olmOCR Apache-2.0 nhưng 7B |
+| Scan tiếng Việt — nhẹ, license sạch | **MonkeyOCRv2-B** (VI 83,2) | **SenOCR-Vi** (82,83) | 0,88–0,96B, chạy T4 rất tốt |
+| Bảng / công thức | **PaddleOCR-VL-1.6** (96,34) | **MinerU 4.2.3** (95,75) | Paddle mạnh TEDS, có toạ độ |
+| Tài liệu 100+ trang liên tục | **Unlimited-OCR-2** | Chia trang + MinerU/Paddle | Mới, chưa kiểm chứng VI |
+| Tài liệu tiếng Thổ | **MoganOCR-TR-1.5** | — | Không dùng cho tiếng Việt |
+| Không dùng cho OCR | OrcaCyber, Mage-VL-Cowork | — | Sai loại |
+
+**Kết luận về độ mới:** mới nhất là MoganOCR-TR-1.5 (18/11), Unlimited-OCR-2
+(16/11), MinerU 4.2.3 (16/11), PaddleOCR-VL-1.6 (06/11). Nhưng **mới không
+đồng nghĩa tốt nhất cho tiếng Việt**: chỉ Chandra 2, olmOCR 2, MonkeyOCRv2-B
+và SenOCR-Vi có bằng chứng tiếng Việt. Unlimited-OCR-2 phải thử trước.
+
+### 8.6 Bổ sung vào lô test 30–50 trang
+
+Thêm 2 engine so với kế hoạch cũ:
+
+1. `unlimited2` — Unlimited-OCR-2 (Transformers `infer_multi`).
+2. `mogan` — chỉ để xác nhận không hợp tiếng Việt (tùy chọn, bỏ qua được).
+
+Bộ test cuối cùng: `chandra` (4-bit) · `olmocr` (4-bit) · `monkeyocr` ·
+`senocr` · `paddle` · `mineru4` · `unlimited2`.
+
+---
+
+## 9. Nguồn
 
 - OmniDocBench v1.6 — https://github.com/opendatalab/OmniDocBench
 - MDPBench — https://github.com/Yuliang-Liu/MultimodalOCR/tree/main/MDPBench
@@ -323,6 +405,10 @@ so sánh trực tiếp.
 - Docling — https://github.com/docling-project/docling
 - Marker — https://github.com/datalab-to/marker
 - HunyuanOCR — https://github.com/Tencent-Hunyuan/HunyuanOCR
+- Unlimited-OCR-2 — https://huggingface.co/baidu/Unlimited-OCR-2
+- MoganOCR-TR-1.5 — https://huggingface.co/moganai/MoganOCR-TR-1.5
+- OrcaCyber-Nano-1.0 — https://huggingface.co/orcarouter/OrcaCyber-Nano-1.0
+- Mage-VL-Cowork — https://huggingface.co/microsoft/Mage-VL-Cowork
 
 *Số liệu lấy ngày 20/11/2026. Điểm benchmark thay đổi theo phiên bản model và
 cách chuẩn hoá; luôn kiểm chứng lại trên 30–50 trang dữ liệu thật trước khi
