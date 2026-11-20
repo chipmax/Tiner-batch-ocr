@@ -1,0 +1,22 @@
+tool,type,params,omni_overall,mdpbench_vi,license_code,license_model,stars,vram_t4,verdict
+MonkeyOCRv2-B-Parsing,VLM parser,0.88B,91.80,83.2,Apache-2.0,Apache-2.0,6700,"3.3GB@8K / 6.8GB@40K",best_small_vietnamese
+SenOCR-Vi,VLM fine-tune,0.96B,,82.83,Apache-2.0,Apache-2.0,,"~3-4GB",vietnamese_text_only_no_tables
+PaddleOCR-VL-1.6,VLM+pipeline,0.9B,96.34,79.3,Apache-2.0,Apache-2.0,92900,"4-6GB",best_tables_formulas
+MinerU-4.2.3,MinerU2.5-Pro,1.2B,95.75,74.2,"Apache-2.0+terms",Apache-2.0,84000,"4-8GB",baseline_integrated
+Chandra-2,VLM,5B,,85.6,Apache-2.0,OpenRAIL-M,12700,"12-16GB",highest_vietnamese_but_license
+olmOCR-2,VLM,7B,85.74,84.0,Apache-2.0,Apache-2.0,19800,"12-16GB / 4-bit",high_quality_needs_vllm
+dots.mocr,VLM,3B,,79.9,MIT,MIT,416,"8-10GB",multi_page
+dots.ocr,VLM,3B,90.77,79.1,MIT,MIT,9230,"8-10GB",fallback
+HunyuanOCR-1.5,VLM,1B,89.95,82.4,Tencent-Community,Tencent-Community,2100,"6-8GB",watch_license
+MiniCPM-OCR-1.0,VLM,1.3B,96.44,,Apache-2.0,Apache-2.0,1000,"4-6GB",new_promising
+OvisOCR2,VLM,0.8B,96.47,,Apache-2.0,Apache-2.0,,"3-5GB",new_promising
+Qwen3-VL-8B,general VLM,8B,89.78,73.4,Apache-2.0,Apache-2.0,20200,"16GB+",not_turnkey
+Qwen3.5-9B,general VLM,9B,,74.0,Apache-2.0,Apache-2.0,,"16GB+",not_turnkey
+Unlimited-OCR,VLM,3B,94.00,54.1,MIT,MIT,31300,"8-12GB",avoid_vietnamese
+DeepSeek-OCR-2,VLM,3B,90.25,54.1,MIT,MIT,24200,"8-10GB",avoid_vietnamese
+PP-StructureV3,pipeline,small,,52.7,Apache-2.0,Apache-2.0,92900,"2-6GB",born_digital_only
+MinerU-pipeline,pipeline,small,86.47,27.6,Apache-2.0+terms,Apache-2.0,84000,"2-6GB",avoid_scanned
+Docling,pipeline,small,,,MIT,CDLA-Permissive-2.0,70800,"2-8GB",born_digital
+Marker,pipeline,small,78.44,,Apache-2.0,OpenRAIL-M,41000,"2-8GB",born_digital
+VietOCR,text-line,0.1B,,,Apache-2.0,Apache-2.0,2000,CPU,legacy_no_layout
+PDF-Extract-Kit,pipeline,small,,,AGPL-3.0,AGPL-3.0,10100,"4-8GB",avoid_agpl

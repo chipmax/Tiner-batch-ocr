@@ -59,6 +59,9 @@ See [HUONG-DAN.txt](HUONG-DAN.txt) (Vietnamese) for detailed usage.
 - `docs/HUONG-DAN-GPU-TU-XA.md` — run VLM on a rented remote GPU.
 - [`remote/README.md`](remote/README.md) — **Remote GPU farm**: convert a large
   library on Colab / Kaggle T4 while the local PC only serves files.
+- [`docs/so-sanh-cong-cu-ocr-2026.md`](docs/so-sanh-cong-cu-ocr-2026.md) —
+  benchmark-based comparison of MinerU-class OCR/document-parsing tools
+  (OmniDocBench + MDPBench Vietnamese), with a shortlist for this library.
 
 ## Remote GPU (Colab / Kaggle)
 

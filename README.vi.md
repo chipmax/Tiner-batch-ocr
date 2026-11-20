@@ -73,6 +73,13 @@ Cloudflare Tunnel, quét trên GPU rồi gửi `main.md` + assets về. Chạy �
 phiên Colab/Kaggle cùng lúc; mỗi job chỉ một worker nhận, thử lại tối đa 3 lần.
 Xem [`remote/README.md`](remote/README.md).
 
+## Tài liệu
+
+- [`docs/so-sanh-cong-cu-ocr-2026.md`](docs/so-sanh-cong-cu-ocr-2026.md) — so
+  sánh công cụ OCR/document parsing tương đương MinerU (OmniDocBench +
+  MDPBench tiếng Việt), kèm shortlist cho thư viện này.
+- [`remote/README.md`](remote/README.md) — trang trại GPU Colab/Kaggle.
+
 ## Ảnh giao diện
 
 | Cấu hình | Tiến độ | Tìm kiếm |
