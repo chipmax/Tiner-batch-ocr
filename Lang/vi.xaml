@@ -123,7 +123,7 @@
     <s:String x:Key="S_SysP_Mineru">Engine chính hybrid/vlm/pipeline — model MinerU2.5-Pro-2605-1.2B</s:String>
     <s:String x:Key="S_SysP_Json">Trỏ tới thư mục model local (thiếu thì tự tải, cần mạng)</s:String>
     <s:String x:Key="S_SysP_Gpu">Tăng tốc GPU (không có vẫn chạy CPU, rất chậm)</s:String>
-    <s:String x:Key="S_SysP_Torch">Thư viện AI chạy model MinerU 2.5 trên GPU</s:String>
+    <s:String x:Key="S_SysP_Torch">Thư viện AI chạy model MinerU 4.x (MinerU2.5-Pro) trên GPU</s:String>
     <s:String x:Key="S_SysP_Paddle">Engine phụ OCR scan nhanh — model PP-StructureV3</s:String>
     <s:String x:Key="S_SysP_Kit">Engine MinerU 4.x tier basic (~medium)</s:String>
     <s:String x:Key="S_SysP_WinOcr">Engine OCR miễn phí của Windows (CPU)</s:String>

@@ -1,5 +1,10 @@
 # HUONG DAN: CHAY MINERU VOI GPU TU XA (B7)
 
+> **MinerU 4.2.3:** dùng `mineru-kit parse` với `--vlm-server-url` hoặc
+> `config.yaml` (`model.vlm.server_url`), không cần `vlm-http-client` /
+> `mineru.json` như bản 3.x. Hướng dẫn dưới đây áp dụng cho MinerU 3.x
+> (legacy) và vẫn dùng được với tool ở engine `vlm-http-client`.
+
 ## 1. Nguyen tac hoat dong
 
 - May local chay MinerU voi backend `vlm-http-client` hoac `hybrid-http-client`:

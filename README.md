@@ -6,6 +6,11 @@ A Windows WPF (.NET 8) tool that batch-converts PDF files to Markdown with
 multiple OCR engines, unattended batch runs (resume, pause, auto-shutdown),
 Vietnamese/English UI and light/dark themes.
 
+> **Engine baseline:** MinerU **4.2.3**, using the VLM
+> `MinerU2.5-Pro-2605-1.2B`. The "2.5" is the *model* generation, not the app
+> version — MinerU 4.x is the current release. MinerU 3.x remains available as
+> a legacy engine.
+
 ![Config tab](docs/screenshots/en-01-config.png)
 ![Dark mode](docs/screenshots/en-06-dark.png)
 

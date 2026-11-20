@@ -8,6 +8,11 @@ trên GPU remote Colab/Kaggle T4.
 > tài liệu sạch, số hoá; MDPBench đo tài liệu đa ngữ + ảnh chụp/scan. Sách của
 > bạn thuộc nhóm thứ hai, nên cột **VI (MDPBench)** quan trọng hơn Overall của
 > OmniDocBench.
+>
+> **Về tên gọi MinerU:** ứng dụng hiện là **MinerU 4.2.3**. Model VLM 1,2B bên
+> trong có tên **MinerU2.5-Pro-2605-1.2B** — chữ "2.5" là *tên model*, không
+> phải phiên bản ứng dụng. Các bảng dưới ghi "MinerU2.5-Pro" chính là model mà
+> MinerU 4.2.3 dùng ở tier `standard/advanced`, không phải MinerU 2.5 cũ.
 
 ---
 
@@ -18,7 +23,7 @@ trên GPU remote Colab/Kaggle T4.
 | **1 (khuyên thử trước)** | **MonkeyOCRv2-B-Parsing** | 0,88B, Apache-2.0, **VI 83,2** — điểm tiếng Việt cao nhất trong nhóm nhỏ, chạy T4 rất nhẹ |
 | **2** | **SenOCR-Vi** | 0,96B, Apache-2.0, **VI 82,83** (eval riêng) — fine-tune riêng cho tiếng Việt từ PaddleOCR-VL-1.6 |
 | **3** | **PaddleOCR-VL-1.6** | 0,9B, Apache-2.0, **VI 79,3**, mạnh bảng/công thức, pipeline hoàn chỉnh, dễ tích hợp |
-| **4** | **MinerU 4.2.3 / MinerU2.5-Pro** | 1,2B, **VI 74,2** nhưng tích hợp sẵn, ổn định, tốt cho PDF gốc số |
+| **4** | **MinerU 4.2.3** (model MinerU2.5-Pro) | 1,2B, **VI 74,2** nhưng tích hợp sẵn, ổn định, tốt cho PDF gốc số |
 | **5 (chất lượng cao, license hạn chế)** | **Chandra 2** | 5B, **VI 85,6** — cao nhất mã nguồn mở, nhưng model OpenRAIL-M hạn chế thương mại |
 | **6** | **olmOCR 2 (7B)** | Apache-2.0, **VI 84,0** — tốt nhưng 7B, T4 phải dùng 4-bit/FP8 |
 
@@ -92,7 +97,7 @@ Cột **VI** là điểm tiếng Việt (thang 100). Đây là bảng sát với
 | **MonkeyOCRv2-B-Parsing** | VLM parser | 0,88B | 3,3 GB @8K; 6,8 GB @40K | 91,8 | **83,2** | Apache-2.0 | 6,7k | Rất tốt | Cân bằng nhất |
 | **SenOCR-Vi** | VLM (PaddleOCR-VL ft) | 0,96B | ~3–4 GB | — | **82,83*** | Apache-2.0 | — | Rất tốt | Yếu bảng/formula |
 | **PaddleOCR-VL-1.6** | VLM + pipeline | 0,9B | 4–6 GB | 96,34 | 79,3 | Apache-2.0 | 92,9k | Rất tốt | Bảng/formula mạnh |
-| **MinerU 4.2.3** | VLM + pipeline | 1,2B | 4–8 GB | 95,75 | 74,2 | Apache-2.0 + điều khoản | 84k | Rất tốt | Tích hợp sẵn |
+| **MinerU 4.2.3** (model MinerU2.5-Pro) | VLM + pipeline | 1,2B | 4–8 GB | 95,75 | 74,2 | Apache-2.0 + điều khoản | 84k | Rất tốt | Tích hợp sẵn |
 | **Chandra 2** | VLM | 5B | 12–16 GB | — | **85,6** | Apache-2.0 / OpenRAIL-M | 12,7k | Chật, nên 4-bit | Bố cục tốt |
 | **olmOCR 2** | VLM | 7B | 12–16 GB (FP8 9,6 GB) | 85,7 | **84,0** | Apache-2.0 | 19,8k | Cần 4-bit | Dùng vLLM |
 | **dots.mocr** | VLM | 3B | 5,8 GB → 8–10 GB | — | 79,9 | MIT | 416 | Tốt | Đa trang |
@@ -116,7 +121,7 @@ Cột **VI** là điểm tiếng Việt (thang 100). Đây là bảng sát với
 
 ## 4. Phân tích từng ứng viên
 
-### 4.1 MinerU 4.2.3 / MinerU2.5-Pro (baseline hiện tại)
+### 4.1 MinerU 4.2.3 (model MinerU2.5-Pro-2605-1.2B) — baseline hiện tại
 
 - **Ưu**: tích hợp sẵn trong tool, pipeline hoàn chỉnh (layout + OCR + bảng +
   công thức + reading order), xuất markdown, có `basic` (không VLM) và

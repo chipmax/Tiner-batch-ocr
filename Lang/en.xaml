@@ -123,7 +123,7 @@
     <s:String x:Key="S_SysP_Mineru">Main engine hybrid/vlm/pipeline — MinerU2.5-Pro-2605-1.2B model</s:String>
     <s:String x:Key="S_SysP_Json">Points to the local model folder (auto-downloads if missing, needs network)</s:String>
     <s:String x:Key="S_SysP_Gpu">GPU acceleration (CPU fallback works but very slow)</s:String>
-    <s:String x:Key="S_SysP_Torch">AI library running the MinerU 2.5 model on GPU</s:String>
+    <s:String x:Key="S_SysP_Torch">AI library running the MinerU 4.x model (MinerU2.5-Pro) on GPU</s:String>
     <s:String x:Key="S_SysP_Paddle">Secondary fast scan-OCR engine — PP-StructureV3 model</s:String>
     <s:String x:Key="S_SysP_Kit">MinerU 4.x engine, basic tier (~medium)</s:String>
     <s:String x:Key="S_SysP_WinOcr">Built-in free Windows OCR engine (CPU)</s:String>

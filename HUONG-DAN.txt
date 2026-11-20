@@ -1,11 +1,12 @@
 ﻿============================================================
- MinerU 2.5 — Batch OCR Tool (bản portable)
+ Tiner Batch OCR — MinerU 4.2.3 / PaddleOCR / Windows OCR
 ============================================================
 
 1. GIỚI THIỆU
 -------------
-Tool giao diện Windows, chạy OCR hàng loạt file PDF bằng engine
-MinerU 2.5 (chuyển PDF thành Markdown + ảnh + JSON).
+Tool giao diện Windows, chạy OCR hàng loạt file PDF bằng nhiều engine:
+MinerU 4.2.3 (chính; model VLM MinerU2.5-Pro-2605-1.2B), MinerU 3.x
+(chế độ tương thích), PaddleOCR và Windows OCR. Kết quả: Markdown + ảnh + JSON.
 Đã đóng gói sẵn .NET bên trong — KHÔNG cần cài thêm gì để mở tool.
 
  2. CÁCH DÙNG
@@ -99,26 +100,24 @@ máy đích:
      https://www.python.org/downloads/
      (mẹo: mở tool, bấm "Kiểm tra" ở card KIỂM TRA HỆ THỐNG rồi
      "Cài đặt tự động" — tool tự lo các bước b, d và venv Paddle/MinerU4x)
-  b) Mở cmd, chạy:
-        pip install mineru[core]
+  b) Engine chính — MinerU 4.2.3 (khuyến nghị):
+        pip install mineru==4.2.3
+     (MinerU 3.x chỉ dùng khi cần tương thích:
+        pip install "mineru[core]")
   c) GPU NVIDIA + driver mới nhất: chạy nhanh (khuyến nghị).
      Không có GPU vẫn chạy được nhưng rất chậm.
-  d) Model MinerU2.5 (1.2B):
-     - Cách 1 (cần mạng): mineru tự tải model ở lần chạy đầu tiên.
-     - Cách 2 (offline): copy thư mục model từ máy gốc sang, rồi tạo
-       file  %USERPROFILE%\mineru.json  với nội dung tối thiểu:
+  d) Model VLM (1.2B) — MinerU 4.x dùng MinerU2.5-Pro-2605-1.2B:
+     - Cách 1 (cần mạng): mineru-kit tự tải model ở lần chạy đầu.
+     - Cách 2 (offline): MinerU 4.x đọc cấu hình tại
+       %MINERU_HOME%\config.yaml (mặc định %USERPROFILE%\.mineru\config.yaml),
+       không còn dùng mineru.json như bản 3.x:
 
-       {
-           "models-dir": {
-               "vlm": "C:\\duong-dan-toi\\MinerU2.5-2509-1.2B"
-           },
-           "model-source": "huggingface"
-       }
+           model:
+             base_dir: "C:\\duong-dan-toi\\models"
+             source: local
 
-       (thay đường dẫn cho đúng; trong JSON dấu \ phải viết \\)
-     - Model mới MinerU2.5-Pro-2605-1.2B cho chất lượng cao hơn
-       (đặc biệt bảng biểu). Nếu có thư mục model này, trỏ
-       "vlm" trong mineru.json tới nó.
+       (đặt model vào base_dir; trong YAML dấu \ phải viết \\)
+     - MinerU 3.x (legacy) vẫn dùng %USERPROFILE%\mineru.json như cũ.
 
 6. NẾU TOOL KHÔNG TÌM THẤY mineru.exe
 -------------------------------------
@@ -131,11 +130,11 @@ máy đích:
 7. KIỂM TRA HỆ THỐNG + TỰ CÀI ĐẶT (máy mới)
 ---------------------------------------------
 Card "KIỂM TRA HỆ THỐNG" quét các thành phần tool cần:
-Python 3.10+, pip, MinerU 3.x, mineru.json, GPU/driver, torch CUDA,
-PaddleOCR (venv paddle-env), MinerU 4.x (venv mineru4x-venv), đĩa trống.
+Python 3.10+, pip, MinerU 4.x (mineru-kit, venv mineru4x-venv), GPU/driver,
+torch CUDA, PaddleOCR (venv paddle-env), MinerU 3.x (legacy), đĩa trống.
 - Bấm "Kiểm tra": hiện [OK]/[THIEU] từng mục.
 - Bấm "Cài đặt tự động": tool tự cài các mục còn thiếu bằng pip
-  (đúng phiên bản đã kiểm chứng: mineru 3.4.5, paddle cu126, torch cu130...),
+  (đúng phiên bản đã kiểm chứng: mineru 4.2.3, paddle cu126, torch cu130...),
   tự dựng venv và ghi file *-path.txt. Mất 10-20 phút, cần mạng.
 - Không tự cài được: Python (mở trang download + gợi ý lệnh winget),
   driver GPU (xem mục 8), model (~2GB, tự tải ở lần chạy đầu, cần mạng).

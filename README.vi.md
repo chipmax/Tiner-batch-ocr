@@ -6,6 +6,11 @@ Tool WPF (.NET 8) chạy OCR hàng loạt file PDF thành Markdown, hỗ trợ n
 chạy batch unattended (tự resume, tạm dừng, tự tắt máy), giao diện Việt/Anh,
 Sáng/Tối.
 
+> **Engine nền:** MinerU **4.2.3**, dùng model VLM
+> `MinerU2.5-Pro-2605-1.2B`. Chữ "2.5" là *thế hệ model*, không phải phiên bản
+> ứng dụng — MinerU 4.x mới là bản hiện hành. MinerU 3.x vẫn còn ở chế độ
+> tương thích.
+
 ![Tab Cấu hình](docs/screenshots/01-config.png)
 ![Tab Tiến độ](docs/screenshots/02-progress.png)
 
