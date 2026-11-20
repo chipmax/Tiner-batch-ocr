@@ -1,0 +1,7 @@
+bin/
+connect.json
+remote-state.db
+remote-state.db-*
+_test/
+__pycache__/
+*.pyc

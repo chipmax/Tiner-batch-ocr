@@ -27,6 +27,10 @@ Vietnamese/English UI and light/dark themes.
 - **Search**: full-text search across all scanned `.md` files.
 - **System tab**: per-component checklist (red = required, yellow = optional),
   **install all or one-by-one** via pip/venvs automatically.
+- **Remote GPU farm**: offload a whole library to **Colab / Kaggle** GPUs via
+  [`remote/`](remote/README.md) — the local PC serves PDFs through a Cloudflare
+  tunnel, workers run MinerU 4.2.3 / PaddleOCR-VL / dots.ocr and return markdown.
+  No 25 GB cloud upload, no extra account, resumable across sessions.
 - **Interface**: 5 tabs (Config, Progress, Search, System, Settings), font size
   80–150%, background transparency, always-on-top, F1 help, CLI mode
   (`--autostart --src --out --engine`).
@@ -53,6 +57,28 @@ See [HUONG-DAN.txt](HUONG-DAN.txt) (Vietnamese) for detailed usage.
 
 - `HUONG-DAN.txt` — usage guide (Vietnamese).
 - `docs/HUONG-DAN-GPU-TU-XA.md` — run VLM on a rented remote GPU.
+- [`remote/README.md`](remote/README.md) — **Remote GPU farm**: convert a large
+  library on Colab / Kaggle T4 while the local PC only serves files.
+
+## Remote GPU (Colab / Kaggle)
+
+For libraries too large for the local GPU (e.g. 2,000+ PDFs / 25 GB), run the
+whole batch on free T4 GPUs:
+
+```powershell
+cd remote
+python coordinator.py plan  --src "F:\books" --out "F:\books-ocr"
+python coordinator.py serve --src "F:\books" --out "F:\books-ocr" --tunnel
+# paste the printed URL + TOKEN into docs/colab/Tiner_Remote_Colab.ipynb
+# (or the Kaggle kernel in docs/colab/remote_worker/), then Run All
+python coordinator.py status
+python coordinator.py merge --out "F:\books-ocr"
+```
+
+The local machine keeps the PDFs and a small SQLite queue; workers pull page
+chunks over a Cloudflare tunnel, OCR them on GPU, and push `main.md` + assets
+back. Multiple Colab/Kaggle sessions can run at once; jobs are claimed once and
+retried up to 3 times. See [`remote/README.md`](remote/README.md).
 
 ## Screenshots
 
